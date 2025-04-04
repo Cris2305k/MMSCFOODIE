@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MMSCFOODIE</title>
+    <link rel="stylesheet" href="styles.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Bienvenido a MMSCFOODIE - Universidad Católica de Colombia</h1>
+        <h2>Pedidos rápidos y deliciosos para estudiantes. ¡Disfruta tu comida!</h2>
+    </header>
+
+    <nav id="carrito">
+        <h2 id="tituloDeCarrito">Aún no has agregado productos al carrito</h2>
+        <form class="none">
+            <label id="labelPrincipal" for="direccion">¿Dónde quieres recibir tu pedido en la universidad?</label>
+            <textarea name="direccion" id="direccion" cols="30" rows="3" placeholder="Ej: Edificio E, segundo piso"></textarea>
+            <label id="advertencia" class="none">Ingresa una dirección válida</label>
+        </form>
+        <div id="metodoPago" class="none">
+            <label for="pago">Selecciona un método de pago:</label>
+            <select id="pago">
+                <option value="efectivo">Efectivo</option>
+                <option value="nequi">Nequi</option>
+                <option value="daviplata">Daviplata</option>
+                <option value="tarjeta">Tarjeta</option>
+            </select>
+        </div>
+        
+        <div class="none" id="productosAgregadosAlCarrito"></div>
+        <h4 class="none">Envío: $2.000 COP</h4>
+        <h3 id="total" class="none">Total: $2.000 COP</h3>
+        <button onclick="RealizarCompra()" class="none">Finalizar compra</button>
+    </nav>
+
+    <button id="iconoDelCarrito" onclick="AbrirElCarrito()">
+        <h3>🛒</h3>
+    </button>
+
+    <section>
+        <article>
+            <img src="https://images.unsplash.com/photo-1606788075760-f99130d6d671" alt="Almuerzo Ejecutivo">
+            <h2>Almuerzo Ejecutivo</h2>
+            <h4>Arroz, carne asada, papas fritas, ensalada y jugo natural.</h4>
+            <p>Precio: $12.000 COP</p>
+            <button onclick="agregarProductoAlCarrito('almuerzo')">Agregar al carrito</button>
+        </article>
+
+        <article>
+            <img src="https://images.unsplash.com/photo-1550547660-d9450f859349" alt="Hamburguesa de la Casa">
+            <h2>Hamburguesa de la Casa</h2>
+            <h4>Hamburguesa doble carne, queso cheddar, lechuga, tomate y papas a la francesa.</h4>
+            <p>Precio: $10.000 COP</p>
+            <button onclick="agregarProductoAlCarrito('hamburguesa')">Agregar al carrito</button>
+        </article>
+
+        <article>
+            <img src="https://www.revistamag.com/wp-content/uploads/2023/05/hot-dog-ternera-parrilla-snack-ketchup-ia-generativa.jpg" alt="Perro Caliente">
+            <h2>Perro Caliente</h2>
+            <h4>Salchicha americana, papas ripio, salsas al gusto y queso.</h4>
+            <p>Precio: $7.000 COP</p>
+            <button onclick="agregarProductoAlCarrito('perro')">Agregar al carrito</button>
+        </article>
+
+        <article>
+            <img src="https://images.unsplash.com/photo-1598514982601-501dc6db0e0b" alt="Bebidas">
+            <h2>Bebidas</h2>
+            <h4>Gaseosas, jugos naturales y agua.</h4>
+            <p>Precio: Desde $2.000 COP</p>
+            <button onclick="agregarProductoAlCarrito('bebida')">Agregar al carrito</button>
+        </article>
+    </section>
+
+    <footer>
+        <hr />
+        <h2>¡Gracias por preferir MMSCFOODIE!<br>Tu pedido está en camino.</h2>
+    </footer>
+
+    <script src="index.js"></script>
+    <button id="modoOscuroToggle" onclick="toggleModoOscuro()">🌙 Modo Oscuro</button>
+</body>
+</html>
