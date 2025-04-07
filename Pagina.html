@@ -3,36 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MMSCFOODIE</title>
+    <title>BLESSEDFOOD</title>
     <link rel="stylesheet" href="styles.css" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <header>
-        <h1>Bienvenido a MMSCFOODIE - Universidad Católica de Colombia</h1>
+        <h1>Bienvenido a BLESSEDFOOD - Universidad Católica de Colombia</h1>
         <h2>Pedidos rápidos y deliciosos para estudiantes. ¡Disfruta tu comida!</h2>
     </header>
 
     <nav id="carrito">
+        
+        <button id="btnFinalizarCompra" onclick="RealizarCompra()" class="none">Finalizar compra</button>
+        <button id="cerrarCarrito" onclick="cerrarCarrito()">Cerrar Carrito</button>
         <h2 id="tituloDeCarrito">Aún no has agregado productos al carrito</h2>
+        
         <form class="none">
-            <label id="labelPrincipal" for="direccion">¿Dónde quieres recibir tu pedido en la universidad?</label>
+            <label id="labelPrincipal" for="direccion">¿Dónde quieres recibir tu pedido?</label>
             <textarea name="direccion" id="direccion" cols="30" rows="3" placeholder="Ej: Edificio E, segundo piso"></textarea>
             <label id="advertencia" class="none">Ingresa una dirección válida</label>
         </form>
+        
         <div id="metodoPago" class="none">
             <label for="pago">Selecciona un método de pago:</label>
             <select id="pago">
-                <option value="efectivo">Efectivo</option>
                 <option value="nequi">Nequi</option>
                 <option value="daviplata">Daviplata</option>
-                <option value="tarjeta">Tarjeta</option>
             </select>
         </div>
         
         <div class="none" id="productosAgregadosAlCarrito"></div>
-        <h4 class="none">Envío: $2.000 COP</h4>
-        <h3 id="total" class="none">Total: $2.000 COP</h3>
+        <h4 class="none">Envío: $5.000 COP</h4>
+        <h3 id="total" class="none">Total: $5.000 COP</h3>
         <button onclick="RealizarCompra()" class="none">Finalizar compra</button>
     </nav>
 
@@ -73,13 +76,33 @@
             <button onclick="agregarProductoAlCarrito('bebida')">Agregar al carrito</button>
         </article>
     </section>
-
-    <footer>
-        <hr />
-        <h2>¡Gracias por preferir MMSCFOODIE!<br>Tu pedido está en camino.</h2>
     </footer>
-
     <script src="index.js"></script>
     <button id="modoOscuroToggle" onclick="toggleModoOscuro()">🌙 Modo Oscuro</button>
+    <script>
+        function toggleQuienesSomos() {
+            const info = document.getElementById("info-integrantes");
+            info.style.display = (info.style.display === "none") ? "block" : "none";
+        }
+    </script>
+    <div id="procesando" class="none">
+        <p>⏳ Procesando tu pedido...</p>
+    </div>
+    
 </body>
+<section id="quienes-somos">
+    <button onclick="toggleQuienesSomos()">¿Quiénes somos?</button>
+    
+
+    <div id="info-integrantes" style="display: none;">
+        <h2>Integrantes del Proyecto</h2>
+        <p>Somos un grupo de estudiantes de la Universidad Católica de Colombia comprometidos con ofrecer soluciones prácticas y deliciosas para la comunidad estudiantil.</p>
+        <ul>
+            <li><strong>Integrante 1:</strong> Cristian Varon</li>
+            <li><strong>Integrante 2:</strong> Miguel velasco </li>
+            <li><strong>Integrante 3:</strong> Miguel Torres </li>
+            <li><strong>Integrante 4:</strong> Sebastian Torres Erazo</li>
+        </ul>
+    </div>
+</section>
 </html>
