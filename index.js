@@ -42,7 +42,7 @@ auth.onAuthStateChanged((user) => {
   if (user) {
     const email = user.email;
     const domain = email.split('@')[1];
-    const allowedDomains = ["miuniversidad.edu", "gmail.com"];
+    const allowedDomains = ["ucatolica.edu", "gmail.com"];
     if (allowedDomains.includes(domain)) {
       document.getElementById("user-status").textContent = `Bienvenido, ${user.displayName}`;
       document.getElementById("google-login").style.display = "none";
