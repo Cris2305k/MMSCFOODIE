@@ -1,4 +1,4 @@
-//Firebase
+// Firebase
 const firebaseConfig = {
   apiKey: "AIzaSyDk0RoiW5wyaNzsfKFlcyHH5vtpDYp7LeY",
   authDomain: "blessedfood-8aeba.firebaseapp.com",
@@ -11,29 +11,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-// Función de login
+// Función de login con redirección
 function loginWithProvider(provider) {
-  auth.signInWithPopup(provider)
-    .then((result) => {
-      const user = result.user;
-      const email = user.email;
-      const domain = email.split("@")[1];
-      const allowedDomains = ["ucatolica.edu", "gmail.com"];
-
-      if (allowedDomains.includes(domain)) {
-        document.getElementById("user-status").textContent = `Bienvenido, ${user.displayName}`;
-        document.getElementById("google-login").style.display = "none";
-        document.getElementById("microsoft-login").style.display = "none";
-        document.getElementById("logout").style.display = "inline";
-      } else {
-        auth.signOut();
-        alert("Correo no autorizado");
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-      alert("Error en el login");
-    });
+  auth.signInWithRedirect(provider);
 }
 
 // Botones de login
@@ -77,6 +57,28 @@ auth.onAuthStateChanged((user) => {
   }
 });
 
+// Obtener el resultado de la redirección
+auth.getRedirectResult().then((result) => {
+  if (result.user) {
+    const user = result.user;
+    const email = user.email;
+    const domain = email.split("@")[1];
+    const allowedDomains = ["ucatolica.edu", "gmail.com"];
+
+    if (allowedDomains.includes(domain)) {
+      document.getElementById("user-status").textContent = `Bienvenido, ${user.displayName}`;
+      document.getElementById("google-login").style.display = "none";
+      document.getElementById("microsoft-login").style.display = "none";
+      document.getElementById("logout").style.display = "inline";
+    } else {
+      auth.signOut();
+      alert("Correo no autorizado");
+    }
+  }
+}).catch((error) => {
+  console.error(error);
+  alert("Error en la redirección");
+});
 
 // ------------------- Carrito de compras ----------------------
 
