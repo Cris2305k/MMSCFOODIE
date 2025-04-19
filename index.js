@@ -47,55 +47,6 @@ document.getElementById("logout").onclick = () => {
 // Primero obtener resultado de redirección
 auth.getRedirectResult().then((result) => {
   if (result.user) {
-    const user = result.user;// Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyDk0RoiW5wyaNzsfKFlcyHH5vtpDYp7LeY",
-  authDomain: "blessedfood-8aeba.firebaseapp.com",
-  projectId: "blessedfood-8aeba",
-  storageBucket: "blessedfood-8aeba.firebasestorage.app",
-  messagingSenderId: "843865224329",
-  appId: "1:843865224329:web:d46d3d7335bf2dfba40258"
-};
-
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-
-// Forzar persistencia local (opcional pero recomendado)
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
-
-// Función de login con redirección
-function loginWithProvider(provider) {
-  auth.signInWithRedirect(provider);
-}
-
-// Botones de login
-document.getElementById("google-login").onclick = () => {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  loginWithProvider(provider);
-};
-
-document.getElementById("microsoft-login").onclick = () => {
-  const provider = new firebase.auth.OAuthProvider("microsoft.com");
-  loginWithProvider(provider);
-};
-
-// Cerrar sesión
-document.getElementById("logout").onclick = () => {
-  auth.signOut().then(() => {
-    // Actualizar el estado del UI
-    document.getElementById("user-status").textContent = "No has iniciado sesión";
-    document.getElementById("google-login").style.display = "inline";
-    document.getElementById("microsoft-login").style.display = "inline";
-    document.getElementById("logout").style.display = "none";
-  }).catch((error) => {
-    console.error("Error al cerrar sesión:", error);
-    alert("Hubo un error al cerrar sesión. Intenta nuevamente.");
-  });
-};
-
-// Primero obtener resultado de redirección
-auth.getRedirectResult().then((result) => {
-  if (result.user) {
     const user = result.user;
     const email = user.email;
     const domain = email.split("@")[1];
