@@ -11,6 +11,9 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
+// Forzar persistencia local (opcional pero recomendado)
+auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
+
 // Función de login con redirección
 function loginWithProvider(provider) {
   auth.signInWithRedirect(provider);
@@ -37,27 +40,7 @@ document.getElementById("logout").onclick = () => {
   });
 };
 
-// Monitorear el estado de autenticación
-auth.onAuthStateChanged((user) => {
-  if (user) {
-    const email = user.email;
-    const domain = email.split('@')[1];
-    const allowedDomains = ["ucatolica.edu", "gmail.com"];
-    if (allowedDomains.includes(domain)) {
-      document.getElementById("user-status").textContent = `Bienvenido, ${user.displayName}`;
-      document.getElementById("google-login").style.display = "none";
-      document.getElementById("microsoft-login").style.display = "none";
-      document.getElementById("logout").style.display = "inline";
-    }
-  } else {
-    document.getElementById("user-status").textContent = "No has iniciado sesión";
-    document.getElementById("google-login").style.display = "inline";
-    document.getElementById("microsoft-login").style.display = "inline";
-    document.getElementById("logout").style.display = "none";
-  }
-});
-
-// Obtener el resultado de la redirección
+// Primero obtener resultado de redirección
 auth.getRedirectResult().then((result) => {
   if (result.user) {
     const user = result.user;
@@ -76,8 +59,28 @@ auth.getRedirectResult().then((result) => {
     }
   }
 }).catch((error) => {
-  console.error(error);
+  console.error("Error en la redirección:", error);
   alert("Error en la redirección");
+}).finally(() => {
+  // Monitorear estado de autenticación después del redirect
+  auth.onAuthStateChanged((user) => {
+    if (user) {
+      const email = user.email;
+      const domain = email.split('@')[1];
+      const allowedDomains = ["ucatolica.edu", "gmail.com"];
+      if (allowedDomains.includes(domain)) {
+        document.getElementById("user-status").textContent = `Bienvenido, ${user.displayName}`;
+        document.getElementById("google-login").style.display = "none";
+        document.getElementById("microsoft-login").style.display = "none";
+        document.getElementById("logout").style.display = "inline";
+      }
+    } else {
+      document.getElementById("user-status").textContent = "No has iniciado sesión";
+      document.getElementById("google-login").style.display = "inline";
+      document.getElementById("microsoft-login").style.display = "inline";
+      document.getElementById("logout").style.display = "none";
+    }
+  });
 });
 
 // ------------------- Carrito de compras ----------------------
@@ -199,4 +202,3 @@ function eliminarProductoDelCarrito(index) {
 function toggleModoOscuro() {
   document.body.classList.toggle("dark-mode");
 }
-
