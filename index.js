@@ -33,10 +33,14 @@ document.getElementById("microsoft-login").onclick = () => {
 // Cerrar sesión
 document.getElementById("logout").onclick = () => {
   auth.signOut().then(() => {
+    // Actualizar el estado del UI
     document.getElementById("user-status").textContent = "No has iniciado sesión";
     document.getElementById("google-login").style.display = "inline";
     document.getElementById("microsoft-login").style.display = "inline";
     document.getElementById("logout").style.display = "none";
+  }).catch((error) => {
+    console.error("Error al cerrar sesión:", error);
+    alert("Hubo un error al cerrar sesión. Intenta nuevamente.");
   });
 };
 
@@ -72,13 +76,14 @@ auth.getRedirectResult().then((result) => {
         document.getElementById("user-status").textContent = `Bienvenido, ${user.displayName}`;
         document.getElementById("google-login").style.display = "none";
         document.getElementById("microsoft-login").style.display = "none";
-        document.getElementById("logout").style.display = "inline";
+        document.getElementById("logout").style.display = "inline"; // Mostrar logout
       }
     } else {
+      // Si no hay usuario logueado, resetear el estado
       document.getElementById("user-status").textContent = "No has iniciado sesión";
       document.getElementById("google-login").style.display = "inline";
       document.getElementById("microsoft-login").style.display = "inline";
-      document.getElementById("logout").style.display = "none";
+      document.getElementById("logout").style.display = "none"; // Esconder logout
     }
   });
 });
