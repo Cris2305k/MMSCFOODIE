@@ -25,7 +25,6 @@
     </header>
 
     <nav id="carrito">
-        
         <button id="btnFinalizarCompra" onclick="RealizarCompra()" class="none">Finalizar compra</button>
         <button id="cerrarCarrito" onclick="cerrarCarrito()">Cerrar Carrito</button>
         <h2 id="tituloDeCarrito">Aún no has agregado productos al carrito</h2>
@@ -87,34 +86,26 @@
             <button onclick="agregarProductoAlCarrito('bebida')">Agregar al carrito</button>
         </article>
     </section>
-    </footer>
-    <script src="index.js" defer></script>
+
+    <section id="quienes-somos">
+        <button onclick="toggleQuienesSomos()">¿Quiénes somos?</button>
+        <div id="info-integrantes" style="display: none;">
+            <h2>Integrantes del Proyecto</h2>
+            <p>Somos un grupo de estudiantes de la Universidad Católica de Colombia comprometidos con ofrecer soluciones prácticas y deliciosas para la comunidad estudiantil.</p>
+            <ul>
+                <li><strong>Integrante 1:</strong> Cristian Varon</li>
+                <li><strong>Integrante 2:</strong> Miguel velasco </li>
+                <li><strong>Integrante 3:</strong> Miguel Torres </li>
+                <li><strong>Integrante 4:</strong> Sebastian Torres Erazo</li>
+            </ul>
+        </div>
+    </section>
+
     <button id="modoOscuroToggle" onclick="toggleModoOscuro()">🌙 Modo Oscuro</button>
-    <script>
-        function toggleQuienesSomos() {
-            const info = document.getElementById("info-integrantes");
-            info.style.display = (info.style.display === "none") ? "block" : "none";
-        }
-    </script>
+    <script src="index.js" defer></script>
+
     <div id="procesando" class="none">
         <p>⏳ Procesando tu pedido...</p>
     </div>
-    
 </body>
-
-<section id="quienes-somos">
-    <button onclick="toggleQuienesSomos()">¿Quiénes somos?</button>
-    
-
-    <div id="info-integrantes" style="display: none;">
-        <h2>Integrantes del Proyecto</h2>
-        <p>Somos un grupo de estudiantes de la Universidad Católica de Colombia comprometidos con ofrecer soluciones prácticas y deliciosas para la comunidad estudiantil.</p>
-        <ul>
-            <li><strong>Integrante 1:</strong> Cristian Varon</li>
-            <li><strong>Integrante 2:</strong> Miguel velasco </li>
-            <li><strong>Integrante 3:</strong> Miguel Torres </li>
-            <li><strong>Integrante 4:</strong> Sebastian Torres Erazo</li>
-        </ul>
-    </div>
-</section>
 </html>
