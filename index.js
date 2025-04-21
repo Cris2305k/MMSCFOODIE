@@ -10,7 +10,6 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
-let usuarioLogueado = false;
 
 // Función de login
 function loginWithProvider(provider) {
@@ -63,24 +62,21 @@ auth.onAuthStateChanged((user) => {
   if (user) {
     const email = user.email;
     const domain = email.split('@')[1];
-    const allowedDomains = ["ucatolica.edu", "gmail.com"];
+    const allowedDomains = ["miuniversidad.edu", "gmail.com"];
     if (allowedDomains.includes(domain)) {
-      usuarioLogueado = true; // ✅ ESTADO DE LOGIN
-
       document.getElementById("user-status").textContent = `Bienvenido, ${user.displayName}`;
       document.getElementById("google-login").style.display = "none";
       document.getElementById("microsoft-login").style.display = "none";
       document.getElementById("logout").style.display = "inline";
     }
   } else {
-    usuarioLogueado = false; // ✅ NO ESTÁ LOGUEADO
-
     document.getElementById("user-status").textContent = "No has iniciado sesión";
     document.getElementById("google-login").style.display = "inline";
     document.getElementById("microsoft-login").style.display = "inline";
     document.getElementById("logout").style.display = "none";
   }
 });
+
 
 // ------------------- Carrito de compras ----------------------
 
@@ -106,18 +102,13 @@ const productos = {
 let carrito = [];
 
 function agregarProductoAlCarrito(tipo) {
-  if (!usuarioLogueado) {
-    alert("Debes iniciar sesión para agregar productos al carrito.");
-    return;
-  }
   carrito.push(productos[tipo]);
   actualizarCarrito();
 }
 
-
 function AbrirElCarrito() {
   const nav = document.getElementById("carrito");
-  nav.style.display = nav.style.display === "block" ? "none" : "block";
+  nav.style.display = nav.style.display === "block" ? "none" : "block"; // Toggle carrito visibility
 }
 
 function actualizarCarrito() {
@@ -139,7 +130,8 @@ function actualizarCarrito() {
     totalLabel.classList.add("none");
     contenedor.classList.add("none");
     document.querySelector("form").classList.add("none");
-    document.getElementById("btnFinalizarCompra").classList.add("none");
+    document.querySelector("button").classList.add("none");
+    document.getElementById("btnFinalizarCompra").classList.add("none");  // Ocultar el botón de finalizar compra
     return;
   }
 
@@ -161,11 +153,13 @@ function actualizarCarrito() {
   contenedor.classList.remove("none");
   totalLabel.classList.remove("none");
   document.querySelector("form").classList.remove("none");
-  document.getElementById("btnFinalizarCompra").classList.remove("none");
+  document.querySelector("button").classList.remove("none");
   document.getElementById("metodoPago").classList.remove("none");
 
   const total = subtotal + envio;
   totalLabel.textContent = `Total: $${total.toLocaleString()} COP`;
+
+  document.getElementById("btnFinalizarCompra").classList.remove("none");  // Mostrar el botón de finalizar compra
 }
 
 function RealizarCompra() {
@@ -207,3 +201,96 @@ function toggleModoOscuro() {
   document.body.classList.toggle("dark-mode");
 }
 
+
+// Obtener cantidad seleccionada
+function obtenerCantidad(tipo) {
+  const input = document.getElementById(`cantidad-${tipo}`);
+  return input ? parseInt(input.value) || 1 : 1;
+}
+
+// Modificar agregarProductoAlCarrito para que permita múltiples cantidades
+function agregarProductoAlCarrito(tipo) {
+  const cantidad = obtenerCantidad(tipo);
+  for (let i = 0; i < cantidad; i++) {
+    carrito.push(productos[tipo]);
+  }
+  actualizarCarrito();
+}
+
+// Redirección a Nequi o Daviplata
+function RealizarCompra() {
+  const direccion = document.getElementById("direccion").value.trim();
+  const metodoPago = document.getElementById("pago").value;
+  const advertencia = document.getElementById("advertencia");
+  const procesando = document.getElementById("procesando");
+
+  if (direccion.length < 5) {
+    advertencia.classList.remove("none");
+    return;
+  }
+
+  advertencia.classList.add("none");
+  procesando.classList.remove("none");
+
+  setTimeout(() => {
+    procesando.classList.add("none");
+    guardarHistorial();
+
+    const url = metodoPago === "nequi"
+      ? "https://www.nequi.com.co/"
+      : "https://www.daviplata.com/wps/portal/daviplata/";
+
+    window.open(url, '_blank');
+    alert(`✅ Pedido en camino a: ${direccion}\n💳 Pago: ${metodoPago.toUpperCase()}`);
+    
+    carrito = [];
+    document.getElementById("direccion").value = "";
+    actualizarCarrito();
+    document.getElementById("metodoPago").classList.add("none");
+  }, 2000);
+}
+
+// Guardar historial en localStorage
+function guardarHistorial() {
+  const historial = JSON.parse(localStorage.getItem("historialCompras")) || [];
+  historial.push({
+    fecha: new Date().toLocaleString(),
+    pedido: [...carrito]
+  });
+  localStorage.setItem("historialCompras", JSON.stringify(historial));
+  mostrarHistorial();
+}
+
+// Mostrar historial si está logueado
+function mostrarHistorial() {
+  const user = auth.currentUser;
+  if (!user) return;
+
+  const historialSection = document.getElementById("historial");
+  const contenedor = document.getElementById("contenedor-historial");
+
+  historialSection.style.display = "block";
+  contenedor.innerHTML = "";
+
+  const historial = JSON.parse(localStorage.getItem("historialCompras")) || [];
+
+  if (historial.length === 0) {
+    contenedor.innerHTML = "<p>No hay historial de compras aún.</p>";
+    return;
+  }
+
+  historial.forEach((compra, i) => {
+    const div = document.createElement("div");
+    div.innerHTML = `<strong>Compra #${i + 1}</strong> - ${compra.fecha}<br>` +
+      compra.pedido.map(p => `• ${p.nombre} - $${p.precio.toLocaleString()} COP`).join("<br>");
+    div.classList.add("compra");
+    contenedor.appendChild(div);
+  });
+}
+
+// Mostrar historial automáticamente si hay login
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    mostrarHistorial();
+  }
+});
