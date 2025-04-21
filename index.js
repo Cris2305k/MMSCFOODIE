@@ -10,6 +10,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+let usuarioLogueado = false;
 
 // Función de login
 function loginWithProvider(provider) {
@@ -62,21 +63,24 @@ auth.onAuthStateChanged((user) => {
   if (user) {
     const email = user.email;
     const domain = email.split('@')[1];
-    const allowedDomains = ["miuniversidad.edu", "gmail.com"];
+    const allowedDomains = ["ucatolica.edu", "gmail.com"];
     if (allowedDomains.includes(domain)) {
+      usuarioLogueado = true; // ✅ ESTADO DE LOGIN
+
       document.getElementById("user-status").textContent = `Bienvenido, ${user.displayName}`;
       document.getElementById("google-login").style.display = "none";
       document.getElementById("microsoft-login").style.display = "none";
       document.getElementById("logout").style.display = "inline";
     }
   } else {
+    usuarioLogueado = false; // ✅ NO ESTÁ LOGUEADO
+
     document.getElementById("user-status").textContent = "No has iniciado sesión";
     document.getElementById("google-login").style.display = "inline";
     document.getElementById("microsoft-login").style.display = "inline";
     document.getElementById("logout").style.display = "none";
   }
 });
-
 
 // ------------------- Carrito de compras ----------------------
 
@@ -102,9 +106,14 @@ const productos = {
 let carrito = [];
 
 function agregarProductoAlCarrito(tipo) {
+  if (!usuarioLogueado) {
+    alert("Debes iniciar sesión para agregar productos al carrito.");
+    return;
+  }
   carrito.push(productos[tipo]);
   actualizarCarrito();
 }
+
 
 function AbrirElCarrito() {
   const nav = document.getElementById("carrito");
@@ -130,7 +139,7 @@ function actualizarCarrito() {
     totalLabel.classList.add("none");
     contenedor.classList.add("none");
     document.querySelector("form").classList.add("none");
-    document.querySelector("button").classList.add("none");
+    document.getElementById("btnFinalizarCompra").classList.add("none");
     return;
   }
 
@@ -152,7 +161,7 @@ function actualizarCarrito() {
   contenedor.classList.remove("none");
   totalLabel.classList.remove("none");
   document.querySelector("form").classList.remove("none");
-  document.querySelector("button").classList.remove("none");
+  document.getElementById("btnFinalizarCompra").classList.remove("none");
   document.getElementById("metodoPago").classList.remove("none");
 
   const total = subtotal + envio;
