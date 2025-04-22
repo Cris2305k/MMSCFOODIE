@@ -294,3 +294,4 @@ auth.onAuthStateChanged((user) => {
     mostrarHistorial();
   }
 });
+// Prueba de edición Vegetto14
