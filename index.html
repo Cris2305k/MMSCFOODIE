@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>BLESSEDFOOD</title>
     <link rel="stylesheet" href="styles.css" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
 </head>
 <body>
-    <!-- Bloque de login -->
+    <!-- Login -->
     <div id="login-container">
         <h3>Inicia sesión para hacer pedidos</h3>
         <button id="google-login">Login con Google</button>
@@ -19,23 +20,27 @@
         <button id="logout" style="display:none;">Cerrar sesión</button>
         <p id="user-status">No has iniciado sesión</p>
     </div>
+
     <header>
         <h1>Bienvenido a BLESSEDFOOD - Universidad Católica de Colombia</h1>
         <h2>Pedidos rápidos y deliciosos para estudiantes. ¡Disfruta tu comida!</h2>
     </header>
 
+    <!-- Buscador -->
+    <input type="text" id="buscador" placeholder="🔍 Buscar producto..." oninput="buscarProducto()" style="display: block; margin: 1rem auto; padding: 0.5rem; width: 80%; max-width: 400px; font-size: 1rem; border-radius: 8px; border: 1px solid #ccc;">
+
+    <!-- Carrito -->
     <nav id="carrito">
-        
         <button id="btnFinalizarCompra" onclick="RealizarCompra()" class="none">Finalizar compra</button>
         <button id="cerrarCarrito" onclick="cerrarCarrito()">Cerrar Carrito</button>
         <h2 id="tituloDeCarrito">Aún no has agregado productos al carrito</h2>
-        
+
         <form class="none">
             <label id="labelPrincipal" for="direccion">¿Dónde quieres recibir tu pedido?</label>
             <textarea name="direccion" id="direccion" cols="30" rows="3" placeholder="Ej: Edificio E, segundo piso"></textarea>
             <label id="advertencia" class="none">Ingresa una dirección válida</label>
         </form>
-        
+
         <div id="metodoPago" class="none">
             <label for="pago">Selecciona un método de pago:</label>
             <select id="pago">
@@ -43,7 +48,7 @@
                 <option value="daviplata">Daviplata</option>
             </select>
         </div>
-        
+
         <div class="none" id="productosAgregadosAlCarrito"></div>
         <h4 class="none">Envío: $5.000 COP</h4>
         <h3 id="total" class="none">Total: $5.000 COP</h3>
@@ -54,7 +59,8 @@
         <h3>🛒</h3>
     </button>
 
-    <section>
+    <!-- Productos -->
+    <section id="lista-productos">
         <article>
             <img src="https://olaclick.com/wp-content/uploads/2023/02/menu-ejecutivo-con-pollo-compressed.jpg" alt="Almuerzo Ejecutivo">
             <h2>Almuerzo Ejecutivo</h2>
@@ -87,34 +93,46 @@
             <button onclick="agregarProductoAlCarrito('bebida')">Agregar al carrito</button>
         </article>
     </section>
-    </footer>
-    <script src="index.js" defer></script>
+
+    <!-- Botón modo oscuro -->
     <button id="modoOscuroToggle" onclick="toggleModoOscuro()">🌙 Modo Oscuro</button>
+
+    <!-- Quienes somos -->
+    <section id="quienes-somos">
+        <button onclick="toggleQuienesSomos()">¿Quiénes somos?</button>
+        <div id="info-integrantes" style="display: none;">
+            <h2>Integrantes del Proyecto</h2>
+            <p>Somos un grupo de estudiantes de la Universidad Católica de Colombia comprometidos con ofrecer soluciones prácticas y deliciosas para la comunidad estudiantil.</p>
+            <ul>
+                <li><strong>Integrante 1:</strong> Cristian Varon</li>
+                <li><strong>Integrante 2:</strong> Miguel Velasco</li>
+                <li><strong>Integrante 3:</strong> Miguel Torres</li>
+                <li><strong>Integrante 4:</strong> Sebastian Torres Erazo</li>
+            </ul>
+        </div>
+    </section>
+
+    <!-- Modal de confirmación -->
+    <div id="modalConfirmacion" class="modal none">
+        <div class="modal-contenido">
+            <span class="cerrar" onclick="cerrarModal()">&times;</span>
+            <h2>✅ ¡Gracias por tu pedido!</h2>
+            <p>En breve será entregado en la dirección indicada.</p>
+        </div>
+    </div>
+
+    <!-- Procesando -->
+    <div id="procesando" class="none">
+        <p>⏳ Procesando tu pedido...</p>
+    </div>
+
+    <!-- Script -->
+    <script src="index.js" defer></script>
     <script>
         function toggleQuienesSomos() {
             const info = document.getElementById("info-integrantes");
             info.style.display = (info.style.display === "none") ? "block" : "none";
         }
     </script>
-    <div id="procesando" class="none">
-        <p>⏳ Procesando tu pedido...</p>
-    </div>
-    
 </body>
-
-<section id="quienes-somos">
-    <button onclick="toggleQuienesSomos()">¿Quiénes somos?</button>
-    
-
-    <div id="info-integrantes" style="display: none;">
-        <h2>Integrantes del Proyecto</h2>
-        <p>Somos un grupo de estudiantes de la Universidad Católica de Colombia comprometidos con ofrecer soluciones prácticas y deliciosas para la comunidad estudiantil.</p>
-        <ul>
-            <li><strong>Integrante 1:</strong> Cristian Varon</li>
-            <li><strong>Integrante 2:</strong> Miguel velasco </li>
-            <li><strong>Integrante 3:</strong> Miguel Torres </li>
-            <li><strong>Integrante 4:</strong> Sebastian Torres Erazo</li>
-        </ul>
-    </div>
-</section>
 </html>
