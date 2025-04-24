@@ -10,6 +10,7 @@ const firebaseConfig = {
 
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
+const db = firebase.firestore();
 
 auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL);
 
@@ -39,7 +40,7 @@ document.getElementById("logout").onclick = () => {
   });
 };
 
-auth.getRedirectResult().then((result) => {
+auth.getRedirectResult().then(async (result) => {
   if (result.user) {
     const user = result.user;
     const email = user.email;
@@ -51,6 +52,20 @@ auth.getRedirectResult().then((result) => {
       document.getElementById("google-login").style.display = "none";
       document.getElementById("microsoft-login").style.display = "none";
       document.getElementById("logout").style.display = "inline";
+
+      const userRef = db.collection("usuarios").doc(user.uid);
+      const doc = await userRef.get();
+
+      if (!doc.exists) {
+        await userRef.set({
+          nombre: user.displayName,
+          direccion: "",
+          telefono: "",
+          historialPedidos: [],
+          fechaRegistro: new Date().toISOString(),
+          rol: "admin"
+        });
+      }
     } else {
       auth.signOut();
       alert("Correo no autorizado");
@@ -79,7 +94,6 @@ auth.getRedirectResult().then((result) => {
     }
   });
 });
-
 const productos = {
   almuerzo: { nombre: "Almuerzo Ejecutivo", precio: 12000 },
   hamburguesa: { nombre: "Hamburguesa de la Casa", precio: 10000 },
