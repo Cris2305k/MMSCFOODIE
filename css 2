@@ -1,0 +1,262 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    background: #fafafa;
+    color: #333;
+}
+
+header {
+    background: #e65100;
+    color: white;
+    padding: 2rem;
+    text-align: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+header h1 {
+    margin-bottom: 0.5rem;
+}
+
+header h2 {
+    font-weight: 400;
+}
+
+section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 2rem;
+    gap: 2rem;
+}
+
+article {
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    width: 300px;
+    padding: 1rem;
+    text-align: center;
+    transition: transform 0.2s ease;
+}
+
+article:hover {
+    transform: translateY(-5px);
+}
+
+article img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 0.5rem;
+}
+
+button {
+    background: #ff6f00;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    margin-top: 1rem;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background: #e65100;
+}
+
+#iconoDelCarrito {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background: #ff9800;
+    border-radius: 50px;
+    padding: 1rem;
+    border: none;
+    z-index: 999;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+#iconoDelCarrito h3 {
+    margin: 0;
+}
+
+nav#carrito {
+    position: fixed;
+    right: 0;
+    top: 0;
+    background: white;
+    width: 350px;
+    height: 100vh;
+    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    overflow-y: auto;
+    display: none;
+    z-index: 1000;
+}
+
+.boton-eliminar {
+    margin-left: 10px;
+}
+
+footer {
+    background: #eeeeee;
+    padding: 2rem;
+    text-align: center;
+    color: #555;
+    margin-top: 3rem;
+}
+
+textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid #ccc;
+}
+
+.none {
+    display: none;
+}
+.dark-mode {
+    background: #333;
+    color: #0c0c0c;
+}
+
+.dark-mode header {
+    background: #ff9800;
+}
+
+.dark-mode button {
+    background: #ff6f00;
+}
+
+.dark-mode nav#carrito {
+    background: #444;
+    color: #fafafa;
+}
+
+.dark-mode footer {
+    background: #555;
+    color: #fafafa;
+}
+
+
+form {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    min-height: 120px;
+}
+
+
+textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    resize: none;
+}
+
+
+#advertencia {
+    color: red;
+    margin-top: 0.5rem;
+}
+#quienes-somos {
+    padding: 20px;
+    background-color: #ffffff;
+    margin: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+    font-family: 'Roboto', sans-serif;
+}
+
+#quienes-somos h2 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+#quienes-somos ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+#quienes-somos li {
+    margin-bottom: 8px;
+}
+
+#procesando {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    color: #333;
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    z-index: 2000;
+    font-size: 1.2rem;
+    text-align: center;
+}
+.dark-mode #procesando {
+    background: #444;
+    color: white;
+}
+#datos-usuario-adicionales {
+    margin: 2rem auto;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    background-color: #f9f9f9;
+}
+
+#datos-usuario-adicionales input {
+    display: block;
+    width: 100%;
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+#datos-usuario-adicionales button {
+    padding: 0.6rem 1rem;
+    font-size: 1rem;
+    background-color: #008cba;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+#historialPedidos {
+    margin: 2rem auto;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    background-color: #fff7e6;
+}
+
+#historialPedidos h3 {
+    margin-bottom: 1rem;
+}
+
+#historialPedidos ul {
+    list-style: none;
+    padding: 0;
+}
+
+#historialPedidos li {
+    background-color: #f1f1f1;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 5px;
+}
