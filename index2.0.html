@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BLESSEDFOOD</title>
     <link rel="stylesheet" href="styles.css" />
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-    
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
 </head>
+
 <body>
     <!-- Login -->
     <div id="login-container">
@@ -21,14 +21,7 @@
         <p id="user-status">No has iniciado sesión</p>
     </div>
 
-    <!-- Campos de usuario adicionales -->
-    <div id="datos-usuario-adicionales" class="none">
-        <h3>Completa tu perfil</h3>
-        <input type="text" id="nombreUsuario" placeholder="Tu nombre completo" required />
-        <input type="tel" id="telefonoUsuario" placeholder="Tu número de teléfono" required />
-        <button onclick="guardarDatosUsuario()">Guardar Datos</button>
-    </div>
-
+    <!-- Header -->
     <header>
         <h1>Bienvenido a BLESSEDFOOD - Universidad Católica de Colombia</h1>
         <h2>Pedidos rápidos y deliciosos para estudiantes. ¡Disfruta tu comida!</h2>
@@ -63,12 +56,13 @@
         <button onclick="RealizarCompra()" class="none">Finalizar compra</button>
     </nav>
 
+    <!-- Icono Carrito -->
     <button id="iconoDelCarrito" onclick="AbrirElCarrito()">
         <h3>🛒</h3>
     </button>
 
     <!-- Productos -->
-    <section id="lista-productos">
+    <section>
         <article>
             <img src="https://olaclick.com/wp-content/uploads/2023/02/menu-ejecutivo-con-pollo-compressed.jpg" alt="Almuerzo Ejecutivo">
             <h2>Almuerzo Ejecutivo</h2>
@@ -96,23 +90,53 @@
         <article>
             <img src="https://elmundoalinstante.com/wp-content/uploads/2023/01/bigstock-bottles-of-global-soft-drink-b-438811265_6_928x621.jpeg" alt="Bebidas">
             <h2>Bebidas</h2>
-            <h4>Gaseosas, jugos naturales y agua.</h4>
+            <h4>Gaseosas y agua.</h4>
             <p>Precio: Desde $2.000 COP</p>
             <button onclick="agregarProductoAlCarrito('bebida')">Agregar al carrito</button>
         </article>
+
+        <article>
+            <img src="https://www.bettycrocker.lat/wp-content/uploads/2020/12/BClatam-recipe-brownies-clasicos-de-chocolate.png" alt="Brownie">
+            <h2>Brownie de Chocolate</h2>
+            <h4>Brownie casero de chocolate semiamargo, ideal para acompañar tu almuerzo.</h4>
+            <p>Precio: $5.000 COP</p>
+            <button onclick="agregarProductoAlCarrito('brownie')">Agregar al carrito</button>
+        </article>
+
+        <article>
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5EOGMmPnzdem-hno0swfu4Xa5dHLi9w_7Tw&s" alt="Empanada">
+            <h2>Empanada de Pollo</h2>
+            <h4>Empanada crujiente rellena de pollo desmechado y papa criolla.</h4>
+            <p>Precio: $3.000 COP</p>
+            <button onclick="agregarProductoAlCarrito('empanada')">Agregar al carrito</button>
+        </article>
+
+        <article>
+            <img src="https://www.mycolombianrecipes.com/wp-content/uploads/2009/05/arepa-rellena-de-queso-045.jpg" alt="Arepa con Queso">
+            <h2>Arepa con Queso</h2>
+            <h4>Arepa rellena de queso mozzarella fundido.</h4>
+            <p>Precio: $4.000 COP</p>
+            <button onclick="agregarProductoAlCarrito('arepa')">Agregar al carrito</button>
+        </article>
+
+        <article>
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQS1EjnIapdA1zZPCBLJ78UsOxZgEvvJed1hg&s" alt="Limonada de Coco">
+            <h2>Limonada de Coco</h2>
+            <h4>Refrescante limonada natural mezclada con crema de coco.</h4>
+            <p>Precio: $6.000 COP</p>
+            <button onclick="agregarProductoAlCarrito('limonada')">Agregar al carrito</button>
+        </article>
     </section>
 
-    <!-- Botón modo oscuro -->
-    <button id="modoOscuroToggle" onclick="toggleModoOscuro()">🌙 Modo Oscuro</button>
-
-    <!-- Quienes somos -->
+    <!-- Sección Quienes Somos -->
     <section id="quienes-somos">
         <button onclick="toggleQuienesSomos()">¿Quiénes somos?</button>
+
         <div id="info-integrantes" style="display: none;">
             <h2>Integrantes del Proyecto</h2>
             <p>Somos un grupo de estudiantes de la Universidad Católica de Colombia comprometidos con ofrecer soluciones prácticas y deliciosas para la comunidad estudiantil.</p>
             <ul>
-                <li><strong>Integrante 1:</strong> Cristian Varon</li>
+                <li><strong>Integrante 1:</strong> Cristian Varón</li>
                 <li><strong>Integrante 2:</strong> Miguel Velasco</li>
                 <li><strong>Integrante 3:</strong> Miguel Torres</li>
                 <li><strong>Integrante 4:</strong> Sebastian Torres Erazo</li>
@@ -120,32 +144,36 @@
         </div>
     </section>
 
-    <!-- Historial de pedidos -->
-    <section id="historialPedidos" class="none">
-        <h3>Historial de pedidos</h3>
-        <ul id="listaPedidos"></ul>
-    </section>
-
-    <!-- Modal de confirmación -->
-    <div id="modalConfirmacion" class="modal none">
-        <div class="modal-contenido">
-            <span class="cerrar" onclick="cerrarModal()">&times;</span>
-            <h2>✅ ¡Gracias por tu pedido!</h2>
-            <p>En breve será entregado en la dirección indicada.</p>
-        </div>
-    </div>
+    <!-- Modo Oscuro -->
+    <button id="modoOscuroToggle" onclick="toggleModoOscuro()">🌙 Modo Oscuro</button>
 
     <!-- Procesando -->
     <div id="procesando" class="none">
         <p>⏳ Procesando tu pedido...</p>
     </div>
 
-    <!-- Script -->
+    <!-- Scripts -->
     <script src="index.js" defer></script>
+
     <script>
         function toggleQuienesSomos() {
             const info = document.getElementById("info-integrantes");
             info.style.display = (info.style.display === "none") ? "block" : "none";
+        }
+
+        function buscarProducto() {
+            const input = document.getElementById('buscador');
+            const filter = input.value.toLowerCase();
+            const productos = document.querySelectorAll('section article');
+        
+            productos.forEach(producto => {
+                const nombre = producto.querySelector('h2').innerText.toLowerCase();
+                if (nombre.includes(filter)) {
+                    producto.style.display = "block";
+                } else {
+                    producto.style.display = "none";
+                }
+            });
         }
     </script>
 </body>
