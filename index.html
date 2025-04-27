@@ -28,6 +28,12 @@
         <button id="btnFinalizarCompra" onclick="RealizarCompra()" class="none">Finalizar compra</button>
         <button id="cerrarCarrito" onclick="cerrarCarrito()">Cerrar Carrito</button>
         <h2 id="tituloDeCarrito">Aún no has agregado productos al carrito</h2>
+        
+        <div id="productosAgregadosAlCarrito"></div>
+        <h4 class="none">Envío: $5.000 COP</h4>
+        <h3 id="total" class="none">Total: $5.000 COP</h3>
+        <button onclick="RealizarCompra()" class="none">Finalizar compra</button>
+    </nav>
 
         <form class="none">
             <label id="labelPrincipal" for="direccion">¿Dónde quieres recibir tu pedido?</label>
@@ -42,12 +48,6 @@
                 <option value="daviplata">Daviplata</option>
             </select>
         </div>
-
-        <div class="none" id="productosAgregadosAlCarrito"></div>
-        <h4 class="none">Envío: $5.000 COP</h4>
-        <h3 id="total" class="none">Total: $5.000 COP</h3>
-        <button onclick="RealizarCompra()" class="none">Finalizar compra</button>
-    </nav>
 
     <button id="iconoDelCarrito" onclick="AbrirElCarrito()">
         <h3>🛒</h3>

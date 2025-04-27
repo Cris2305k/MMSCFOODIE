@@ -94,6 +94,33 @@ nav#carrito {
     display: none;
     z-index: 1000;
 }
+.boton-actualizar {
+    background-color: #ff9800;
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    margin: 0.2rem;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.boton-actualizar:hover {
+    background-color: #e65100;
+}
+
+.boton-eliminar {
+    background-color: #d32f2f;
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    margin: 0.2rem;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.boton-eliminar:hover {
+    background-color: #b71c1c;
+}
 
 .boton-eliminar {
     margin-left: 10px;
@@ -201,6 +228,10 @@ textarea {
     font-size: 1.2rem;
     text-align: center;
 }
+#productosAgregadosAlCarrito button {
+    margin: 0 5px;
+}
+
 .dark-mode #procesando {
     background: #444;
     color: white;
