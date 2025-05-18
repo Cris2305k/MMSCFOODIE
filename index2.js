@@ -110,11 +110,19 @@ const firebaseConfig = {
       alert("Debes iniciar sesión para agregar productos al carrito.");
       return;
     }
-    carrito.push(productos[tipo]);
-    actualizarCarrito();
-  }
-  
-  
+        const inputCantidad = document.getElementById(`cantidad-${productoId}`);
+    const cantidad = inputCantidad ? parseInt(inputCantidad.value) : 1;
+
+    if (isNaN(cantidad) || cantidad < 1) {
+        alert("Por favor ingresa una cantidad válida.");   return;
+    }
+    for (let i = 0; i < cantidad; i++) {
+        agregarUnidadAlCarrito(productoId); 
+    }
+
+    actualizarCarrito(); 
+    
+}
   function AbrirElCarrito() {
     const nav = document.getElementById("carrito");
     nav.style.display = nav.style.display === "block" ? "none" : "block";
