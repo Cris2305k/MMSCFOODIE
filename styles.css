@@ -1,208 +1,221 @@
-
 body {
-    font-family: 'Roboto', sans-serif;
-    margin: 0;
-    background: #fafafa;
-    color: #333;
+  font-family: 'Roboto', sans-serif;
+  margin: 0;
+  background: #fafafa;
+  color: #333;
 }
 
 header {
-    background: #e65100;
-    color: white;
-    padding: 2rem;
-    text-align: center;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  background: #e65100;
+  color: white;
+  padding: 2rem;
+  text-align: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-header h1 {
-    margin-bottom: 0.5rem;
+header input {
+  padding: 0.7rem;
+  border-radius: 8px;
+  border: none;
+  width: 60%;
+  margin: 1rem auto;
+  display: block;
 }
 
-header h2 {
-    font-weight: 400;
+#btnHistorial {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 0.7rem 1.2rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
 }
 
 section {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    padding: 2rem;
-    gap: 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  padding: 2rem;
 }
 
 article {
-    background: #fff;
-    border-radius: 1rem;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    width: 300px;
-    padding: 1rem;
-    text-align: center;
-    transition: transform 0.2s ease;
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  padding: 1rem;
+  text-align: center;
+  transition: transform 0.2s ease;
 }
 
 article:hover {
-    transform: translateY(-5px);
+  transform: translateY(-5px);
 }
 
 article img {
-    width: 100%;
-    height: 200px;
-    object-fit: cover;
-    border-radius: 0.5rem;
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 0.5rem;
 }
 
 button {
-    background: #ff6f00;
-    color: white;
-    border: none;
-    padding: 0.7rem 1.5rem;
-    border-radius: 0.5rem;
-    cursor: pointer;
-    margin-top: 1rem;
-    transition: background 0.3s ease;
+  background: #ff6f00;
+  color: white;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background 0.3s ease;
 }
 
 button:hover {
-    background: #e65100;
+  background: #e65100;
 }
 
 #iconoDelCarrito {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    background: #ff9800;
-    border-radius: 50px;
-    padding: 1rem;
-    border: none;
-    z-index: 999;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background: #ff9800;
+  border-radius: 50px;
+  padding: 1rem;
+  border: none;
+  z-index: 999;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 #iconoDelCarrito h3 {
-    margin: 0;
+  margin: 0;
 }
 
 nav#carrito {
-    position: fixed;
-    right: 0;
-    top: 0;
-    background: white;
-    width: 350px;
-    height: 100vh;
-    box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
-    padding: 1rem;
-    overflow-y: auto;
-    display: none;
-    z-index: 1000;
-}
-
-.boton-eliminar {
-    margin-left: 10px;
-}
-
-footer {
-    background: #eeeeee;
-    padding: 2rem;
-    text-align: center;
-    color: #555;
-    margin-top: 3rem;
+  position: fixed;
+  right: 0;
+  top: 0;
+  background: white;
+  width: 350px;
+  height: 100vh;
+  box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  overflow-y: auto;
+  display: none;
+  z-index: 1000;
 }
 
 textarea {
-    width: 100%;
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    border: 1px solid #ccc;
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  border: 1px solid #ccc;
+  resize: none;
 }
 
 .none {
-    display: none;
+  display: none;
 }
+
 .dark-mode {
-    background: #333;
-    color: #0c0c0c;
+  background: #222;
+  color: #eee;
 }
 
 .dark-mode header {
-    background: #ff9800;
+  background: #ff9800;
 }
 
 .dark-mode button {
-    background: #ff6f00;
+  background: #ff6f00;
 }
 
 .dark-mode nav#carrito {
-    background: #444;
-    color: #fafafa;
+  background: #444;
+  color: #fafafa;
 }
 
 .dark-mode footer {
-    background: #555;
-    color: #fafafa;
+  background: #555;
+  color: #fafafa;
 }
 
-
-form {
-    margin-bottom: 1rem;
-    padding: 1rem;
-    background-color: #f9f9f9;
-    border-radius: 8px;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-    min-height: 120px;
+footer {
+  background: #eeeeee;
+  padding: 2rem;
+  text-align: center;
+  color: #555;
+  margin-top: 3rem;
 }
 
-
-textarea {
-    width: 100%;
-    padding: 0.5rem;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    resize: none;
-}
-
-
-#advertencia {
-    color: red;
-    margin-top: 0.5rem;
-}
 #quienes-somos {
-    padding: 20px;
-    background-color: #ffffff;
-    margin: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
-    font-family: 'Roboto', sans-serif;
-}
-
-#quienes-somos h2 {
-    color: #333;
-    margin-bottom: 10px;
+  padding: 20px;
+  background-color: #ffffff;
+  margin: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  font-family: 'Roboto', sans-serif;
 }
 
 #quienes-somos ul {
-    list-style-type: none;
-    padding: 0;
+  list-style-type: none;
+  padding: 0;
 }
 
 #quienes-somos li {
-    margin-bottom: 8px;
+  margin-bottom: 8px;
 }
 
 #procesando {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    color: #333;
-    padding: 2rem;
-    border-radius: 1rem;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    z-index: 2000;
-    font-size: 1.2rem;
-    text-align: center;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  color: #333;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  z-index: 2000;
+  font-size: 1.2rem;
+  text-align: center;
 }
+
 .dark-mode #procesando {
-    background: #444;
-    color: white;
+  background: #444;
+  color: white;
+}
+
+/* Estilos extra para admin y buscador */
+#admin-panel, #catalogo-productos, #admin-productos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
+  padding: 2rem;
+}
+
+#formulario-admin input {
+  padding: 0.7rem;
+  margin: 0.3rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+#formulario-admin button {
+  background-color: #009688;
+  color: white;
+}
+
+button.editar, button.eliminar, button.agregar {
+  background-color: #607d8b;
+  margin: 0.2rem;
+}
+
+button.eliminar {
+  background-color: #f44336;
+}
+
+button.eliminar:hover {
+  background-color: #d32f2f;
 }
