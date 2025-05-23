@@ -1,209 +1,198 @@
-//Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyDk0RoiW5wyaNzsfKFlcyHH5vtpDYp7LeY",
-  authDomain: "blessedfood-8aeba.firebaseapp.com",
-  projectId: "blessedfood-8aeba",
-  storageBucket: "blessedfood-8aeba.firebasestorage.app",
-  messagingSenderId: "843865224329",
-  appId: "1:843865224329:web:d46d3d7335bf2dfba40258"
-};
+// ===============================
+// Estado y autenticación simulada
+// ===============================
+let usuarioActual = null;
+let productos = JSON.parse(localStorage.getItem("productos")) || [];
+let carrito = [];
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-let usuarioLogueado = false;
+// Simula login
+document.getElementById("google-login").onclick = () => login("usuario");
+document.getElementById("microsoft-login").onclick = () => login("admin");
+document.getElementById("logout").onclick = logout;
 
-// Función de login
-function loginWithProvider(provider) {
-  auth.signInWithPopup(provider)
-    .then((result) => {
-      const user = result.user;
-      const email = user.email;
-      const domain = email.split("@")[1];
-      const allowedDomains = ["ucatolica.edu", "gmail.com"];
+function login(tipo) {
+  usuarioActual = {
+    nombre: tipo === "admin" ? "Administrador" : "Cliente",
+    rol: tipo === "admin" ? "admin" : "usuario",
+  };
+  document.getElementById("user-status").textContent = `Sesión iniciada como: ${usuarioActual.nombre}`;
+  document.getElementById("logout").style.display = "inline-block";
+  document.getElementById("google-login").style.display = "none";
+  document.getElementById("microsoft-login").style.display = "none";
+  document.getElementById("btnHistorial").style.display = "inline-block";
 
-      if (allowedDomains.includes(domain)) {
-        document.getElementById("user-status").textContent = `Bienvenido, ${user.displayName}`;
-        document.getElementById("google-login").style.display = "none";
-        document.getElementById("microsoft-login").style.display = "none";
-        document.getElementById("logout").style.display = "inline";
-      } else {
-        auth.signOut();
-        alert("Correo no autorizado");
+  if (usuarioActual.rol === "admin") {
+    document.getElementById("admin-panel").style.display = "block";
+  }
+  renderizarProductos();
+}
+
+function logout() {
+  usuarioActual = null;
+  document.getElementById("user-status").textContent = "No has iniciado sesión";
+  document.getElementById("logout").style.display = "none";
+  document.getElementById("google-login").style.display = "inline-block";
+  document.getElementById("microsoft-login").style.display = "inline-block";
+  document.getElementById("btnHistorial").style.display = "none";
+  document.getElementById("admin-panel").style.display = "none";
+}
+
+// ===============================
+// Gestión de productos
+// ===============================
+document.getElementById("formulario-admin").addEventListener("submit", function (e) {
+  e.preventDefault();
+  const nombre = document.getElementById("nombreProducto").value;
+  const descripcion = document.getElementById("descripcionProducto").value;
+  const precio = parseInt(document.getElementById("precioProducto").value);
+  const imagen = document.getElementById("imagenProducto").value;
+
+  productos.push({ id: Date.now(), nombre, descripcion, precio, imagen });
+  localStorage.setItem("productos", JSON.stringify(productos));
+  this.reset();
+  renderizarProductos();
+});
+
+function renderizarProductos() {
+  const contenedor = document.getElementById("catalogo-productos");
+  const adminContenedor = document.getElementById("admin-productos");
+  contenedor.innerHTML = "";
+  adminContenedor.innerHTML = "";
+
+  const filtro = document.getElementById("buscador").value.toLowerCase();
+
+  productos
+    .filter(p => p.nombre.toLowerCase().includes(filtro))
+    .forEach(producto => {
+      // Para todos
+      const card = document.createElement("article");
+      card.innerHTML = `
+        <img src="${producto.imagen}" alt="${producto.nombre}">
+        <h2>${producto.nombre}</h2>
+        <h4>${producto.descripcion}</h4>
+        <p>Precio: $${producto.precio}</p>
+        <button class="agregar" onclick="agregarAlCarrito(${producto.id})">Agregar al carrito</button>
+      `;
+      contenedor.appendChild(card);
+
+      // Para admin
+      if (usuarioActual?.rol === "admin") {
+        const adminCard = document.createElement("article");
+        adminCard.innerHTML = `
+          <img src="${producto.imagen}" alt="${producto.nombre}">
+          <h2>${producto.nombre}</h2>
+          <p>$${producto.precio}</p>
+          <button class="editar" onclick="editarProducto(${producto.id})">✏️ Editar</button>
+          <button class="eliminar" onclick="eliminarProducto(${producto.id})">🗑️ Eliminar</button>
+        `;
+        adminContenedor.appendChild(adminCard);
       }
-    })
-    .catch((error) => {
-      console.error(error);
-      alert("Error en el login");
     });
 }
 
-// Botones de login
-document.getElementById("google-login").onclick = () => {
-  const provider = new firebase.auth.GoogleAuthProvider();
-  loginWithProvider(provider);
-};
-
-document.getElementById("microsoft-login").onclick = () => {
-  const provider = new firebase.auth.OAuthProvider("microsoft.com");
-  loginWithProvider(provider);
-};
-
-// Cerrar sesión
-document.getElementById("logout").onclick = () => {
-  auth.signOut().then(() => {
-    document.getElementById("user-status").textContent = "No has iniciado sesión";
-    document.getElementById("google-login").style.display = "inline";
-    document.getElementById("microsoft-login").style.display = "inline";
-    document.getElementById("logout").style.display = "none";
-  });
-};
-
-// Monitorear el estado de autenticación
-auth.onAuthStateChanged((user) => {
-  if (user) {
-    const email = user.email;
-    const domain = email.split('@')[1];
-    const allowedDomains = ["ucatolica.edu", "gmail.com"];
-    if (allowedDomains.includes(domain)) {
-      usuarioLogueado = true; // ✅ ESTADO DE LOGIN
-
-      document.getElementById("user-status").textContent = `Bienvenido, ${user.displayName}`;
-      document.getElementById("google-login").style.display = "none";
-      document.getElementById("microsoft-login").style.display = "none";
-      document.getElementById("logout").style.display = "inline";
-    }
-  } else {
-    usuarioLogueado = false; // ✅ NO ESTÁ LOGUEADO
-
-    document.getElementById("user-status").textContent = "No has iniciado sesión";
-    document.getElementById("google-login").style.display = "inline";
-    document.getElementById("microsoft-login").style.display = "inline";
-    document.getElementById("logout").style.display = "none";
-  }
-});
-
-// ------------------- Carrito de compras ----------------------
-
-const productos = {
-  almuerzo: {
-    nombre: "Almuerzo Ejecutivo",
-    precio: 12000
-  },
-  hamburguesa: {
-    nombre: "Hamburguesa de la Casa",
-    precio: 10000
-  },
-  perro: {
-    nombre: "Perro Caliente",
-    precio: 7000
-  },
-  bebida: {
-    nombre: "Bebida",
-    precio: 2000
-  }
-};
-
-let carrito = [];
-
-function agregarProductoAlCarrito(tipo) {
-  if (!usuarioLogueado) {
-    alert("Debes iniciar sesión para agregar productos al carrito.");
-    return;
-  }
-  carrito.push(productos[tipo]);
-  actualizarCarrito();
+function eliminarProducto(id) {
+  productos = productos.filter(p => p.id !== id);
+  localStorage.setItem("productos", JSON.stringify(productos));
+  renderizarProductos();
 }
 
+function editarProducto(id) {
+  const producto = productos.find(p => p.id === id);
+  document.getElementById("nombreProducto").value = producto.nombre;
+  document.getElementById("descripcionProducto").value = producto.descripcion;
+  document.getElementById("precioProducto").value = producto.precio;
+  document.getElementById("imagenProducto").value = producto.imagen;
+  eliminarProducto(id);
+}
+
+// ===============================
+// Buscador
+// ===============================
+document.getElementById("buscador").addEventListener("input", renderizarProductos);
+
+// ===============================
+// Carrito de compras
+// ===============================
+function agregarAlCarrito(id) {
+  const producto = productos.find(p => p.id === id);
+  const item = carrito.find(p => p.id === id);
+  if (item) {
+    item.cantidad++;
+  } else {
+    carrito.push({ ...producto, cantidad: 1 });
+  }
+  mostrarCarrito();
+}
+
+function mostrarCarrito() {
+  document.getElementById("carrito").style.display = "block";
+  const contenedor = document.getElementById("productosAgregadosAlCarrito");
+  contenedor.innerHTML = "";
+
+  let total = 5000; // Envío
+
+  carrito.forEach(p => {
+    total += p.precio * p.cantidad;
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <p><strong>${p.nombre}</strong> - $${p.precio} x ${p.cantidad}</p>
+      <button onclick="cambiarCantidad(${p.id}, -1)">➖</button>
+      <button onclick="cambiarCantidad(${p.id}, 1)">➕</button>
+    `;
+    contenedor.appendChild(div);
+  });
+
+  document.getElementById("total").textContent = `Total: $${total}`;
+  document.getElementById("tituloDeCarrito").textContent = carrito.length ? "Tu carrito:" : "Aún no has agregado productos al carrito";
+}
+
+function cambiarCantidad(id, delta) {
+  const item = carrito.find(p => p.id === id);
+  if (!item) return;
+  item.cantidad += delta;
+  if (item.cantidad <= 0) {
+    carrito = carrito.filter(p => p.id !== id);
+  }
+  mostrarCarrito();
+}
 
 function AbrirElCarrito() {
-  const nav = document.getElementById("carrito");
-  nav.style.display = nav.style.display === "block" ? "none" : "block";
+  document.getElementById("carrito").style.display = "block";
 }
 
-function actualizarCarrito() {
-  const contenedor = document.getElementById("productosAgregadosAlCarrito");
-  const totalLabel = document.getElementById("total");
-  const envioLabel = document.querySelector("h4");
-  document.getElementById("metodoPago").classList.remove("none");
-  const titulo = document.getElementById("tituloDeCarrito");
-  const envio = 5000;
-
-  contenedor.innerHTML = "";
-  let subtotal = 0;
-
-  envioLabel.textContent = `Envío: $${envio.toLocaleString()} COP`;
-  envioLabel.classList.remove("none");
-
-  if (carrito.length === 0) {
-    titulo.textContent = "Aún no has agregado productos al carrito";
-    totalLabel.classList.add("none");
-    contenedor.classList.add("none");
-    document.querySelector("form").classList.add("none");
-    document.getElementById("btnFinalizarCompra").classList.add("none");
-    return;
-  }
-
-  carrito.forEach((item, index) => {
-    const div = document.createElement("div");
-    div.textContent = `${item.nombre} - $${item.precio.toLocaleString()} COP`;
-
-    const btnEliminar = document.createElement("button");
-    btnEliminar.textContent = "Eliminar";
-    btnEliminar.onclick = () => eliminarProductoDelCarrito(index);
-    btnEliminar.classList.add("boton-eliminar");
-
-    div.appendChild(btnEliminar);
-    contenedor.appendChild(div);
-    subtotal += item.precio;
-  });
-
-  titulo.textContent = "Productos en tu carrito:";
-  contenedor.classList.remove("none");
-  totalLabel.classList.remove("none");
-  document.querySelector("form").classList.remove("none");
-  document.getElementById("btnFinalizarCompra").classList.remove("none");
-  document.getElementById("metodoPago").classList.remove("none");
-
-  const total = subtotal + envio;
-  totalLabel.textContent = `Total: $${total.toLocaleString()} COP`;
+function cerrarCarrito() {
+  document.getElementById("carrito").style.display = "none";
 }
 
 function RealizarCompra() {
   const direccion = document.getElementById("direccion").value.trim();
-  const metodoPago = document.getElementById("pago").value;
-  const advertencia = document.getElementById("advertencia");
-  const procesando = document.getElementById("procesando");
-
-  if (direccion.length < 5) {
-    advertencia.classList.remove("none");
+  if (!direccion) {
+    document.getElementById("advertencia").style.display = "block";
     return;
   }
-
-  advertencia.classList.add("none");
-  procesando.classList.remove("none");
+  document.getElementById("advertencia").style.display = "none";
+  document.getElementById("procesando").classList.remove("none");
 
   setTimeout(() => {
-    procesando.classList.add("none");
-    alert(`✅ Tu pedido será entregado en: ${direccion}\n💳 Método de pago: ${metodoPago.toUpperCase()}\n¡Gracias por comprar en BLESSEDFOOD! 😋`);
-
     carrito = [];
-    document.getElementById("direccion").value = "";
-    actualizarCarrito();
-    document.getElementById("metodoPago").classList.add("none");
+    cerrarCarrito();
+    document.getElementById("procesando").classList.add("none");
+    alert("Compra realizada con éxito 🎉");
+    mostrarCarrito();
   }, 2000);
 }
 
-function cerrarCarrito() {
-  const nav = document.getElementById("carrito");
-  nav.style.display = "none";
-}
-
-function eliminarProductoDelCarrito(index) {
-  carrito.splice(index, 1);
-  actualizarCarrito();
-}
-
+// ===============================
+// Modo oscuro
+// ===============================
 function toggleModoOscuro() {
   document.body.classList.toggle("dark-mode");
 }
 
+// ===============================
+// ¿Quiénes somos?
+// ===============================
+function toggleQuienesSomos() {
+  const info = document.getElementById("info-integrantes");
+  info.style.display = info.style.display === "none" ? "block" : "none";
+}
