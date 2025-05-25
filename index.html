@@ -5,116 +5,288 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BLESSEDFOOD</title>
     <link rel="stylesheet" href="styles.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
 </head>
+
 <body>
-    <!-- Bloque de login -->
+    <!-- Login -->
     <div id="login-container">
-        <h3>Inicia sesión para hacer pedidos</h3>
-        <button id="google-login">Login con Google</button>
-        <button id="microsoft-login">Login con Outlook</button>
-        <button id="logout" style="display:none;">Cerrar sesión</button>
+        <h3><i class="fas fa-user-circle"></i> Inicia sesión para hacer pedidos</h3>
+        <div class="login-buttons">
+            <button id="google-login" class="login-btn">
+                <i class="fab fa-google"></i> Google
+            </button>
+            <button id="microsoft-login" class="login-btn microsoft">
+                <i class="fab fa-microsoft"></i> Outlook
+            </button>
+        </div>
+        <button id="logout" class="logout-btn none">
+            <i class="fas fa-sign-out-alt"></i> Cerrar sesión
+        </button>
         <p id="user-status">No has iniciado sesión</p>
     </div>
+
+    <!-- Header -->
     <header>
-        <h1>Bienvenido a BLESSEDFOOD - Universidad Católica de Colombia</h1>
-        <h2>Pedidos rápidos y deliciosos para estudiantes. ¡Disfruta tu comida!</h2>
+        <div class="container">
+            <h1><i class="fas fa-utensils"></i> BLESSEDFOOD</h1>
+            <h2>Universidad Católica de Colombia - Pedidos rápidos y deliciosos para estudiantes</h2>
+        </div>
     </header>
 
-    <nav id="carrito">
-        
-        <button id="btnFinalizarCompra" onclick="RealizarCompra()" class="none">Finalizar compra</button>
-        <button id="cerrarCarrito" onclick="cerrarCarrito()">Cerrar Carrito</button>
-        <h2 id="tituloDeCarrito">Aún no has agregado productos al carrito</h2>
-        
-        <form class="none">
-            <label id="labelPrincipal" for="direccion">¿Dónde quieres recibir tu pedido?</label>
-            <textarea name="direccion" id="direccion" cols="30" rows="3" placeholder="Ej: Edificio E, segundo piso"></textarea>
-            <label id="advertencia" class="none">Ingresa una dirección válida</label>
-        </form>
-        
-        <div id="metodoPago" class="none">
-            <label for="pago">Selecciona un método de pago:</label>
-            <select id="pago">
-                <option value="nequi">Nequi</option>
-                <option value="daviplata">Daviplata</option>
-            </select>
+    <!-- Search Bar -->
+    <div class="container">
+        <div class="search-container">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" id="buscador" placeholder="Buscar tu comida favorita..." oninput="buscarProducto()">
         </div>
-        
-        <div class="none" id="productosAgregadosAlCarrito"></div>
-        <h4 class="none">Envío: $5.000 COP</h4>
-        <h3 id="total" class="none">Total: $5.000 COP</h3>
-        <button onclick="RealizarCompra()" class="none">Finalizar compra</button>
-    </nav>
+    </div>
 
+    <!-- Cart Icon -->
     <button id="iconoDelCarrito" onclick="AbrirElCarrito()">
-        <h3>🛒</h3>
+        <i class="fas fa-shopping-cart"></i>
     </button>
 
-    <section>
-        <article>
-            <img src="https://olaclick.com/wp-content/uploads/2023/02/menu-ejecutivo-con-pollo-compressed.jpg" alt="Almuerzo Ejecutivo">
-            <h2>Almuerzo Ejecutivo</h2>
-            <h4>Arroz, carne asada, papas fritas, ensalada y jugo natural.</h4>
-            <p>Precio: $12.000 COP</p>
-            <button onclick="agregarProductoAlCarrito('almuerzo')">Agregar al carrito</button>
-        </article>
+    <!-- Cart Sidebar -->
+    <nav id="carrito">
+        <div class="cart-header">
+            <h2 class="cart-title" id="tituloDeCarrito">Tu Carrito</h2>
+            <button class="close-cart" onclick="cerrarCarrito()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
 
-        <article>
-            <img src="https://images.unsplash.com/photo-1550547660-d9450f859349" alt="Hamburguesa de la Casa">
-            <h2>Hamburguesa de la Casa</h2>
-            <h4>Hamburguesa doble carne, queso cheddar, lechuga, tomate y papas a la francesa.</h4>
-            <p>Precio: $10.000 COP</p>
-            <button onclick="agregarProductoAlCarrito('hamburguesa')">Agregar al carrito</button>
-        </article>
+        <div id="productosAgregadosAlCarrito" class="none"></div>
 
-        <article>
-            <img src="https://www.revistamag.com/wp-content/uploads/2023/05/hot-dog-ternera-parrilla-snack-ketchup-ia-generativa.jpg" alt="Perro Caliente">
-            <h2>Perro Caliente</h2>
-            <h4>Salchicha americana, papas ripio, salsas al gusto y queso.</h4>
-            <p>Precio: $7.000 COP</p>
-            <button onclick="agregarProductoAlCarrito('perro')">Agregar al carrito</button>
-        </article>
+        <form class="delivery-form none">
+            <div class="form-group">
+                <label class="form-label" for="direccion">
+                    <i class="fas fa-map-marker-alt"></i> ¿Dónde quieres recibir tu pedido?
+                </label>
+                <textarea class="form-input" name="direccion" id="direccion" rows="3" placeholder="Ej: Edificio E, segundo piso, salón 201"></textarea>
+                <label id="advertencia" class="none" style="color: var(--danger); font-size: 0.9rem; margin-top: 0.5rem;">
+                    <i class="fas fa-exclamation-triangle"></i> Ingresa una dirección válida
+                </label>
+            </div>
+        </form>
 
-        <article>
-            <img src="https://elmundoalinstante.com/wp-content/uploads/2023/01/bigstock-bottles-of-global-soft-drink-b-438811265_6_928x621.jpeg" alt="Bebidas">
-            <h2>Bebidas</h2>
-            <h4>Gaseosas, jugos naturales y agua.</h4>
-            <p>Precio: Desde $2.000 COP</p>
-            <button onclick="agregarProductoAlCarrito('bebida')">Agregar al carrito</button>
-        </article>
+        <div id="metodoPago" class="form-group none">
+            <label class="form-label" for="pago">
+                <i class="fas fa-credit-card"></i> Método de pago
+            </label>
+            <select id="pago" class="payment-select">
+                <option value="nequi">💜 Nequi</option>
+                <option value="daviplata">🔴 Daviplata</option>
+                <option value="efectivo">💵 Efectivo</option>
+            </select>
+        </div>
+
+        <div class="cart-totals none">
+            <div class="shipping-cost">
+                <span><i class="fas fa-truck"></i> Envío:</span>
+                <span>$5.000 COP</span>
+            </div>
+            <div class="total-cost" id="total">
+                <span>Total:</span>
+                <span>$5.000 COP</span>
+            </div>
+        </div>
+
+        <button class="checkout-btn none" onclick="RealizarCompra()">
+            <i class="fas fa-check-circle"></i> Finalizar Pedido
+        </button>
+    </nav>
+
+    <!-- Products -->
+    <div class="container">
+        <div class="products-grid">
+            <article class="product-card">
+                <img src="https://olaclick.com/wp-content/uploads/2023/02/menu-ejecutivo-con-pollo-compressed.jpg" alt="Almuerzo Ejecutivo" class="product-image">
+                <div class="product-content">
+                    <h2 class="product-title">Almuerzo Ejecutivo</h2>
+                    <p class="product-description">Arroz, carne asada, papas fritas, ensalada fresca y jugo natural. ¡Un menú completo y balanceado!</p>
+                    <p class="product-price">$12.000 COP</p>
+                    <div class="product-actions">
+                        <input type="number" id="cantidad-almuerzo" class="quantity-input" min="1" value="1">
+                        <button class="add-to-cart-btn" onclick="agregarProductoAlCarrito('almuerzo')">
+                            <i class="fas fa-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="product-card">
+                <img src="https://images.unsplash.com/photo-1550547660-d9450f859349" alt="Hamburguesa de la Casa" class="product-image">
+                <div class="product-content">
+                    <h2 class="product-title">Hamburguesa de la Casa</h2>
+                    <p class="product-description">Hamburguesa doble carne, queso cheddar derretido, lechuga fresca, tomate y papas a la francesa crujientes.</p>
+                    <p class="product-price">$10.000 COP</p>
+                    <div class="product-actions">
+                        <input type="number" id="cantidad-hamburguesa" class="quantity-input" min="1" value="1">
+                        <button class="add-to-cart-btn" onclick="agregarProductoAlCarrito('hamburguesa')">
+                            <i class="fas fa-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="product-card">
+                <img src="https://www.revistamag.com/wp-content/uploads/2023/05/hot-dog-ternera-parrilla-snack-ketchup-ia-generativa.jpg" alt="Perro Caliente" class="product-image">
+                <div class="product-content">
+                    <h2 class="product-title">Perro Caliente</h2>
+                    <p class="product-description">Salchicha americana premium, papas ripio crujientes, salsas al gusto y queso fundido.</p>
+                    <p class="product-price">$7.000 COP</p>
+                    <div class="product-actions">
+                        <input type="number" id="cantidad-perro" class="quantity-input" min="1" value="1">
+                        <button class="add-to-cart-btn" onclick="agregarProductoAlCarrito('perro')">
+                            <i class="fas fa-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="product-card">
+                <img src="https://elmundoalinstante.com/wp-content/uploads/2023/01/bigstock-bottles-of-global-soft-drink-b-438811265_6_928x621.jpeg" alt="Bebidas" class="product-image">
+                <div class="product-content">
+                    <h2 class="product-title">Bebidas Refrescantes</h2>
+                    <p class="product-description">Variedad de gaseosas frías y agua natural para acompañar tu comida perfectamente.</p>
+                    <p class="product-price">Desde $2.000 COP</p>
+                    <div class="product-actions">
+                        <input type="number" id="cantidad-bebida" class="quantity-input" min="1" value="1">
+                        <button class="add-to-cart-btn" onclick="agregarProductoAlCarrito('bebida')">
+                            <i class="fas fa-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="product-card">
+                <img src="https://www.bettycrocker.lat/wp-content/uploads/2020/12/BClatam-recipe-brownies-clasicos-de-chocolate.png" alt="Brownie" class="product-image">
+                <div class="product-content">
+                    <h2 class="product-title">Brownie de Chocolate</h2>
+                    <p class="product-description">Brownie casero de chocolate semiamargo, húmedo y delicioso. Ideal para acompañar tu almuerzo.</p>
+                    <p class="product-price">$5.000 COP</p>
+                    <div class="product-actions">
+                        <input type="number" id="cantidad-brownie" class="quantity-input" min="1" value="1">
+                        <button class="add-to-cart-btn" onclick="agregarProductoAlCarrito('brownie')">
+                            <i class="fas fa-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="product-card">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT5EOGMmPnzdem-hno0swfu4Xa5dHLi9w_7Tw&s" alt="Empanada" class="product-image">
+                <div class="product-content">
+                    <h2 class="product-title">Empanada de Pollo</h2>
+                    <p class="product-description">Empanada crujiente y dorada, rellena de pollo desmechado y papa criolla. ¡Sabor tradicional!</p>
+                    <p class="product-price">$3.000 COP</p>
+                    <div class="product-actions">
+                        <input type="number" id="cantidad-empanada" class="quantity-input" min="1" value="1">
+                        <button class="add-to-cart-btn" onclick="agregarProductoAlCarrito('empanada')">
+                            <i class="fas fa-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="product-card">
+                <img src="https://www.mycolombianrecipes.com/wp-content/uploads/2009/05/arepa-rellena-de-queso-045.jpg" alt="Arepa con Queso" class="product-image">
+                <div class="product-content">
+                    <h2 class="product-title">Arepa con Queso</h2>
+                    <p class="product-description">Arepa tradicional rellena de queso mozzarella fundido. Un clásico que nunca falla.</p>
+                    <p class="product-price">$4.000 COP</p>
+                    <div class="product-actions">
+                        <input type="number" id="cantidad-arepa" class="quantity-input" min="1" value="1">
+                        <button class="add-to-cart-btn" onclick="agregarProductoAlCarrito('arepa')">
+                            <i class="fas fa-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </article>
+
+            <article class="product-card">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQS1EjnIapdA1zZPCBLJ78UsOxZgEvvJed1hg&s" alt="Limonada de Coco" class="product-image">
+                <div class="product-content">
+                    <h2 class="product-title">Limonada de Coco</h2>
+                    <p class="product-description">Refrescante limonada natural mezclada con crema de coco. Perfecta para el calor.</p>
+                    <p class="product-price">$6.000 COP</p>
+                    <div class="product-actions">
+                        <input type="number" id="cantidad-limonada" class="quantity-input" min="1" value="1">
+                        <button class="add-to-cart-btn" onclick="agregarProductoAlCarrito('limonada')">
+                            <i class="fas fa-plus"></i> Agregar
+                        </button>
+                    </div>
+                </div>
+            </article>
+        </div>
+    </div>
+
+    <!-- About Section -->
+    <section id="quienes-somos">
+        <button class="about-toggle" onclick="toggleQuienesSomos()">
+            <i class="fas fa-users"></i> ¿Quiénes somos?
+        </button>
+
+        <div id="info-integrantes" style="display: none;">
+            <h2>Integrantes del Proyecto</h2>
+            <p>Somos un grupo de estudiantes de la Universidad Católica de Colombia comprometidos con ofrecer soluciones prácticas y deliciosas para la comunidad estudiantil.</p>
+            <div class="team-member">
+                <strong>Integrante 1:</strong> Cristian Varón
+            </div>
+            <div class="team-member">
+                <strong>Integrante 2:</strong> Miguel Velasco
+            </div>
+            <div class="team-member">
+                <strong>Integrante 3:</strong> Miguel Torres
+            </div>
+            <div class="team-member">
+                <strong>Integrante 4:</strong> Sebastian Torres Erazo
+            </div>
+        </div>
     </section>
-    </footer>
+
+    <!-- Dark Mode Toggle -->
+    <button id="modoOscuroToggle" onclick="toggleModoOscuro()">
+        <i class="fas fa-moon"></i>
+    </button>
+
+    <!-- Processing Modal -->
+    <div id="procesando" class="none">
+        <div class="processing-icon">
+            <i class="fas fa-spinner"></i>
+        </div>
+        <p>⏳ Procesando tu pedido...</p>
+    </div>
+
+    <!-- Scripts -->
     <script src="index.js" defer></script>
-    <button id="modoOscuroToggle" onclick="toggleModoOscuro()">🌙 Modo Oscuro</button>
+
     <script>
         function toggleQuienesSomos() {
             const info = document.getElementById("info-integrantes");
             info.style.display = (info.style.display === "none") ? "block" : "none";
         }
+
+        function buscarProducto() {
+            const input = document.getElementById('buscador');
+            const filter = input.value.toLowerCase();
+            const productos = document.querySelectorAll('.product-card');
+        
+            productos.forEach(producto => {
+                const nombre = producto.querySelector('.product-title').innerText.toLowerCase();
+                const descripcion = producto.querySelector('.product-description').innerText.toLowerCase();
+                if (nombre.includes(filter) || descripcion.includes(filter)) {
+                    producto.style.display = "block";
+                } else {
+                    producto.style.display = "none";
+                }
+            });
+        }
     </script>
-    <div id="procesando" class="none">
-        <p>⏳ Procesando tu pedido...</p>
-    </div>
-    
 </body>
-
-<section id="quienes-somos">
-    <button onclick="toggleQuienesSomos()">¿Quiénes somos?</button>
-    
-
-    <div id="info-integrantes" style="display: none;">
-        <h2>Integrantes del Proyecto</h2>
-        <p>Somos un grupo de estudiantes de la Universidad Católica de Colombia comprometidos con ofrecer soluciones prácticas y deliciosas para la comunidad estudiantil.</p>
-        <ul>
-            <li><strong>Integrante 1:</strong> Cristian Varon</li>
-            <li><strong>Integrante 2:</strong> Miguel velasco </li>
-            <li><strong>Integrante 3:</strong> Miguel Torres </li>
-            <li><strong>Integrante 4:</strong> Sebastian Torres Erazo</li>
-        </ul>
-    </div>
-</section>
 </html>
