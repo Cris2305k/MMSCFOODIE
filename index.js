@@ -1,4 +1,16 @@
+//Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyDk0RoiW5wyaNzsfKFlcyHH5vtpDYp7LeY",
+  authDomain: "blessedfood-8aeba.firebaseapp.com",
+  projectId: "blessedfood-8aeba",
+  storageBucket: "blessedfood-8aeba.firebasestorage.app",
+  messagingSenderId: "843865224329",
+  appId: "1:843865224329:web:d46d3d7335bf2dfba40258"
+};
 
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+let usuarioLogueado = false;
 // Función de login
 function loginWithProvider(provider) {
     auth.signInWithPopup(provider)
@@ -6,7 +18,7 @@ function loginWithProvider(provider) {
             const user = result.user;
             const email = user.email;
             const domain = email.split("@")[1];
-            const allowedDomains = ["ucatolica.edu.co", "gmail.com"];
+            const allowedDomains = ["ucatolica.edu.co"];
 
             if (allowedDomains.includes(domain)) {
                 document.getElementById("user-status").textContent = `Bienvenido, ${user.displayName}`;
