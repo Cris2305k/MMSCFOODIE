@@ -1,4 +1,11 @@
-
+const firebaseConfig = {
+  apiKey: "AIzaSyDk0RoiW5wyaNzsfKFlcyHH5vtpDYp7LeY",
+  authDomain: "blessedfood-8aeba.firebaseapp.com",
+  projectId: "blessedfood-8aeba",
+  storageBucket: "blessedfood-8aeba.firebasestorage.app",
+  messagingSenderId: "843865224329",
+  appId: "1:843865224329:web:d46d3d7335bf2dfba40258"
+};
 // Función de login
 function loginWithProvider(provider) {
     auth.signInWithPopup(provider)
