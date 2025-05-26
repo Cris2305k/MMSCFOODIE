@@ -1386,4 +1386,7 @@ header h2 {
         box-shadow: none !important;
         border: 1px solid #ddd;
     }
+.microsoft {
+    display: none !important;
+    }
 }
