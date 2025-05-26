@@ -11,7 +11,7 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
 // Configuración de la API - CAMBIA ESTA URL por tu URL de Render
-const API_BASE_URL = 'https://tu-app-render.onrender.com'; // ← CAMBIAR por tu URL real de Render
+const API_BASE_URL = 'https://mmscfoodie.onrender.com';
 let usuarioLogueado = false;
 let usuarioActual = null;
 let carrito = [];
