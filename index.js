@@ -1,4 +1,4 @@
-// Configuración de Firebase
+
 const firebaseConfig = {
   apiKey: "AIzaSyDk0RoiW5wyaNzsfKFlcyHH5vtpDYp7LeY",
   authDomain: "blessedfood-8aeba.firebaseapp.com",
@@ -514,6 +514,27 @@ async function RealizarCompra() {
         // Crear pedido en el backend
         const pedidoCreado = await crearPedido(pedidoData, usuarioActual.email);
 
+        // NUEVA LÓGICA DE REDIRECCIÓN PARA NEQUI Y DAVIPLATA
+        // Preparar datos simplificados para el pago
+        const datosOrden = {
+            orderId: `PEDIDO-${Date.now()}`, // ID simple
+            total: pedidoCreado.total_amount,
+            direccion: direccion,
+            metodoPago: metodoPago,
+            fecha: new Date().toISOString()
+        };
+
+        // Verificar método de pago
+        if (metodoPago === 'nequi') {
+            redireccionarANequi(datosOrden);
+            return; // Salir de la función
+            
+        } else if (metodoPago === 'daviplata') {
+            redireccionarADaviplata(datosOrden);
+            return; // Salir de la función
+        }
+
+        // Si es efectivo, continúa con el flujo normal
         // Crear resumen del pedido
         const resumenProductos = pedidoCreado.items.map(item => 
             `- ${item.product_name} (x${item.quantity}): $${item.total.toLocaleString()} COP`
@@ -573,158 +594,116 @@ Tu pedido será preparado con amor y entregado pronto.
 // Event listener para finalizar pedido
 document.getElementById("finalizar-pedido").addEventListener('click', RealizarCompra);
 
-// Función para mostrar/ocultar historial
-async function toggleHistorial() {
-    const content = document.getElementById("order-history-content");
-    const isVisible = !content.classList.contains("none");
+// Función para mostrar botón de confirmación después del pago
+function mostrarConfirmacionPago(datosOrden) {
+    // Cerrar el modal de procesando
+    document.getElementById("procesando").classList.add("none");
     
-    if (isVisible) {
-        content.classList.add("none");
-    } else {
-        content.classList.remove("none");
-        await cargarHistorial();
-    }
+    // Crear un div para confirmar el pago
+    const confirmDiv = document.createElement('div');
+    confirmDiv.id = 'confirmar-pago-div';
+    confirmDiv.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 1000;
+        max-width: 300px;
+    `;
+    
+    confirmDiv.innerHTML = `
+        <h3 style="margin-bottom: 10px;">¿Ya realizaste el pago?</h3>
+        <p style="margin-bottom: 15px; color: #666;">Orden: ${datosOrden.orderId}</p>
+        <button onclick="confirmarPagoRealizado()" style="
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            margin-bottom: 10px;
+        ">✓ Ya pagué</button>
+        <button onclick="cancelarPago()" style="
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+        ">✗ Cancelar</button>
+    `;
+    
+    document.body.appendChild(confirmDiv);
 }
 
-async function cargarHistorial() {
-    if (!usuarioActual) return;
+// Función para confirmar que el pago fue realizado
+function confirmarPagoRealizado() {
+    const pedidoEnProceso = JSON.parse(localStorage.getItem('pedidoEnProceso'));
     
-    try {
-        const historial = await obtenerHistorialPedidos(usuarioActual.email);
-        renderizarHistorial(historial);
-    } catch (error) {
-        console.error('Error cargando historial:', error);
-        mostrarError('Error al cargar el historial de pedidos');
-    }
-}
+    if (pedidoEnProceso) {
+        // Mostrar resumen del pedido
+        const resumenPedido = `
+🍽️ PEDIDO CONFIRMADO - BLESSEDFOOD 🍽️
 
-function renderizarHistorial(historial) {
-    const container = document.getElementById("orders-list");
-    container.innerHTML = '';
-    
-    if (historial.length === 0) {
-        container.innerHTML = '<p class="no-orders">No tienes pedidos anteriores</p>';
-        return;
-    }
-    
-    historial.forEach(pedido => {
-        const div = document.createElement('div');
-        div.className = 'order-item';
-        
-        const fecha = new Date(pedido.created_at).toLocaleDateString('es-CO', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric',
-            hour: '2-digit',
-            minute: '2-digit'
-        });
-        
-        const productos = pedido.items.map(item => 
-            `${item.product_name} (x${item.quantity})`
-        ).join(', ');
-        
-        div.innerHTML = `
-            <div class="order-header">
-                <h4>Pedido #${pedido.id}</h4>
-                <span class="order-date">${fecha}</span>
-            </div>
-            <div class="order-details">
-                <p><strong>Productos:</strong> ${productos}</p>
-                <p><strong>Dirección:</strong> ${pedido.delivery_address}</p>
-                <p><strong>Método de pago:</strong> ${pedido.payment_method}</p>
-                ${pedido.discount_amount > 0 ? `<p><strong>Descuento aplicado:</strong> $${pedido.discount_amount.toLocaleString()} COP</p>` : ''}
-                <p class="order-total"><strong>Total: $${pedido.total_amount.toLocaleString()} COP</strong></p>
-                <span class="order-status status-${pedido.status}">${pedido.status}</span>
-            </div>
+📋 ID del Pedido: ${pedidoEnProceso.orderId}
+
+💰 Total pagado: ${pedidoEnProceso.total.toLocaleString()} COP
+
+📍 DIRECCIÓN DE ENTREGA:
+${pedidoEnProceso.direccion}
+
+💳 MÉTODO DE PAGO:
+${pedidoEnProceso.metodoPago === 'nequi' ? '💜 Nequi' : '🔴 Daviplata'}
+
+⏰ Tiempo estimado de entrega: 30-45 minutos
+
+¡Gracias por tu compra! 
+Tu pedido está siendo preparado.
+
+📱 Recibirás una notificación cuando esté en camino.
         `;
         
-        container.appendChild(div);
-    });
-}
-
-// Event listener para historial
-document.getElementById("historial-toggle").addEventListener('click', toggleHistorial);
-
-// Función para mostrar/ocultar información del equipo
-function toggleQuienesSomos() {
-    const info = document.getElementById("info-integrantes");
-    const isVisible = !info.classList.contains("none");
-    
-    if (isVisible) {
-        info.classList.add("none");
-    } else {
-        info.classList.remove("none");
-    }
-}
-
-// Event listener para "quiénes somos"
-document.getElementById("about-toggle").addEventListener('click', toggleQuienesSomos);
-
-// Función de búsqueda
-function buscarProducto() {
-    const input = document.getElementById('buscador');
-    const filter = input.value.toLowerCase().trim();
-    const productCards = document.querySelectorAll('.product-card');
-
-    if (filter === '') {
-        productCards.forEach(producto => {
-            producto.style.display = "block";
-        });
-        return;
-    }
-
-    productCards.forEach(producto => {
-        const nombre = producto.querySelector('.product-title').innerText.toLowerCase();
-        const descripcion = producto.querySelector('.product-description').innerText.toLowerCase();
-        const precio = producto.querySelector('.product-price').innerText.toLowerCase();
+        alert(resumenPedido);
         
-        if (nombre.includes(filter) || descripcion.includes(filter) || precio.includes(filter)) {
-            producto.style.display = "block";
-            producto.style.animation = "highlight 0.5s ease-in-out";
-        } else {
-            producto.style.display = "none";
-        }
-    });
-}
-
-// Event listener para búsqueda
-document.getElementById('buscador').addEventListener('input', buscarProducto);
-
-// Función para modo oscuro
-function toggleModoOscuro() {
-    const body = document.body;
-    const isDarkMode = body.classList.contains('dark-mode');
-    
-    if (isDarkMode) {
-        body.classList.remove('dark-mode');
-        document.getElementById('modoOscuroToggle').innerHTML = '<i class="fas fa-moon"></i>';
-        localStorage.setItem('dark-mode', 'false');
-    } else {
-        body.classList.add('dark-mode');
-        document.getElementById('modoOscuroToggle').innerHTML = '<i class="fas fa-sun"></i>';
-        localStorage.setItem('dark-mode', 'true');
-    }
-}
-
-// Event listener para modo oscuro
-document.getElementById('modoOscuroToggle').addEventListener('click', toggleModoOscuro);
-
-// Cerrar carrito al hacer clic fuera
-document.addEventListener('click', function(event) {
-    const carrito = document.getElementById('carrito');
-    const iconoCarrito = document.getElementById('iconoDelCarrito');
-    
-    if (carrito.style.display === 'block' && 
-        !carrito.contains(event.target) && 
-        !iconoCarrito.contains(event.target)) {
+        // Limpiar todo
+        localStorage.removeItem('pedidoEnProceso');
+        carrito = [];
+        document.getElementById("direccion").value = "";
+        document.getElementById("pago").value = "nequi";
+        actualizarCarrito();
         cerrarCarrito();
+        
+        // Remover el div de confirmación
+        const confirmDiv = document.getElementById('confirmar-pago-div');
+        if (confirmDiv) {
+            confirmDiv.remove();
+        }
+        
+        // Recargar recomendaciones
+        cargarRecomendaciones();
     }
-});
+}
 
-// Prevenir que el carrito se cierre al hacer clic dentro
-document.getElementById('carrito').addEventListener('click', function(event) {
-    event.stopPropagation();
-});
+// Función para cancelar el pago
+function cancelarPago() {
+    if (confirm('¿Estás seguro de cancelar el pago?')) {
+        // Remover el div de confirmación
+        const confirmDiv = document.getElementById('confirmar-pago-div');
+        if (confirmDiv) {
+            confirmDiv.remove();
+        }
+        
+        // No limpiar el carrito para que el usuario pueda intentar de nuevo
+        localStorage.removeItem('pedidoEnProceso');
+        
+        mostrarError('Pago cancelado. Puedes intentarlo nuevamente.');
+    }
+}
 
 // Inicialización de la aplicación
 document.addEventListener('DOMContentLoaded', async function() {
@@ -1074,5 +1053,212 @@ style.textContent = `
             gap: 0.5rem;
         }
     }
-`;
-document.head.appendChild(style);
+`
+async function toggleHistorial() {
+    const content = document.getElementById("order-history-content");
+    const isVisible = !content.classList.contains("none");
+    
+    if (isVisible) {
+        content.classList.add("none");
+    } else {
+        content.classList.remove("none");
+        await cargarHistorial();
+    }
+}
+
+async function cargarHistorial() {
+    if (!usuarioActual) return;
+    
+    try {
+        const historial = await obtenerHistorialPedidos(usuarioActual.email);
+        renderizarHistorial(historial);
+    } catch (error) {
+        console.error('Error cargando historial:', error);
+        mostrarError('Error al cargar el historial de pedidos');
+    }
+}
+
+function renderizarHistorial(historial) {
+    const container = document.getElementById("orders-list");
+    container.innerHTML = '';
+    
+    if (historial.length === 0) {
+        container.innerHTML = '<p class="no-orders">No tienes pedidos anteriores</p>';
+        return;
+    }
+    
+    historial.forEach(pedido => {
+        const div = document.createElement('div');
+        div.className = 'order-item';
+        
+        const fecha = new Date(pedido.created_at).toLocaleDateString('es-CO', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        
+        const productos = pedido.items.map(item => 
+            `${item.product_name} (x${item.quantity})`
+        ).join(', ');
+        
+        div.innerHTML = `
+            <div class="order-header">
+                <h4>Pedido #${pedido.id}</h4>
+                <span class="order-date">${fecha}</span>
+            </div>
+            <div class="order-details">
+                <p><strong>Productos:</strong> ${productos}</p>
+                <p><strong>Dirección:</strong> ${pedido.delivery_address}</p>
+                <p><strong>Método de pago:</strong> ${pedido.payment_method}</p>
+                ${pedido.discount_amount > 0 ? `<p><strong>Descuento aplicado:</strong> $${pedido.discount_amount.toLocaleString()} COP</p>` : ''}
+                <p class="order-total"><strong>Total: $${pedido.total_amount.toLocaleString()} COP</strong></p>
+                <span class="order-status status-${pedido.status}">${pedido.status}</span>
+            </div>
+        `;
+        
+        container.appendChild(div);
+    });
+}
+
+// Event listener para historial
+document.getElementById("historial-toggle").addEventListener('click', toggleHistorial);
+
+// Función para mostrar/ocultar información del equipo
+function toggleQuienesSomos() {
+    const info = document.getElementById("info-integrantes");
+    const isVisible = !info.classList.contains("none");
+    
+    if (isVisible) {
+        info.classList.add("none");
+    } else {
+        info.classList.remove("none");
+    }
+}
+
+// Event listener para "quiénes somos"
+document.getElementById("about-toggle").addEventListener('click', toggleQuienesSomos);
+
+// Función de búsqueda
+function buscarProducto() {
+    const input = document.getElementById('buscador');
+    const filter = input.value.toLowerCase().trim();
+    const productCards = document.querySelectorAll('.product-card');
+
+    if (filter === '') {
+        productCards.forEach(producto => {
+            producto.style.display = "block";
+        });
+        return;
+    }
+
+    productCards.forEach(producto => {
+        const nombre = producto.querySelector('.product-title').innerText.toLowerCase();
+        const descripcion = producto.querySelector('.product-description').innerText.toLowerCase();
+        const precio = producto.querySelector('.product-price').innerText.toLowerCase();
+        
+        if (nombre.includes(filter) || descripcion.includes(filter) || precio.includes(filter)) {
+            producto.style.display = "block";
+            producto.style.animation = "highlight 0.5s ease-in-out";
+        } else {
+            producto.style.display = "none";
+        }
+    });
+}
+
+// Event listener para búsqueda
+document.getElementById('buscador').addEventListener('input', buscarProducto);
+
+// Función para modo oscuro
+function toggleModoOscuro() {
+    const body = document.body;
+    const isDarkMode = body.classList.contains('dark-mode');
+    
+    if (isDarkMode) {
+        body.classList.remove('dark-mode');
+        document.getElementById('modoOscuroToggle').innerHTML = '<i class="fas fa-moon"></i>';
+        localStorage.setItem('dark-mode', 'false');
+    } else {
+        body.classList.add('dark-mode');
+        document.getElementById('modoOscuroToggle').innerHTML = '<i class="fas fa-sun"></i>';
+        localStorage.setItem('dark-mode', 'true');
+    }
+}
+
+// Event listener para modo oscuro
+document.getElementById('modoOscuroToggle').addEventListener('click', toggleModoOscuro);
+
+// Cerrar carrito al hacer clic fuera
+document.addEventListener('click', function(event) {
+    const carrito = document.getElementById('carrito');
+    const iconoCarrito = document.getElementById('iconoDelCarrito');
+    
+    if (carrito.style.display === 'block' && 
+        !carrito.contains(event.target) && 
+        !iconoCarrito.contains(event.target)) {
+        cerrarCarrito();
+    }
+});
+
+// Prevenir que el carrito se cierre al hacer clic dentro
+document.getElementById('carrito').addEventListener('click', function(event) {
+    event.stopPropagation();
+});
+
+// NUEVAS FUNCIONES PARA REDIRECCIÓN DE PAGOS
+
+// Función para redireccionar a Nequi (página principal)
+function redireccionarANequi(datosOrden) {
+    // Guardar información del pedido
+    localStorage.setItem('pedidoEnProceso', JSON.stringify(datosOrden));
+    
+    // Mostrar instrucciones al usuario
+    const mensaje = `
+📱 INSTRUCCIONES PARA PAGAR CON NEQUI:
+
+1. Serás redirigido a la página de Nequi
+2. Inicia sesión en tu cuenta
+3. Envía el dinero a: 3001234567 
+4. Monto a pagar: $${datosOrden.total.toLocaleString()} COP
+5. En la descripción coloca: ${datosOrden.orderId}
+
+Después de realizar el pago, regresa aquí y confirma tu pedido.
+    `;
+    
+    alert(mensaje);
+    
+    // Abrir Nequi en una nueva pestaña
+    window.open('https://www.nequi.com.co/', '_blank');
+    
+    // Mostrar botón de confirmación
+    mostrarConfirmacionPago(datosOrden);
+}
+
+// Función para redireccionar a Daviplata (página principal)
+function redireccionarADaviplata(datosOrden) {
+    // Guardar información del pedido
+    localStorage.setItem('pedidoEnProceso', JSON.stringify(datosOrden));
+    
+    // Mostrar instrucciones al usuario
+    const mensaje = `
+📱 INSTRUCCIONES PARA PAGAR CON DAVIPLATA:
+
+1. Serás redirigido a la página de Daviplata
+2. Inicia sesión en tu cuenta
+3. Envía el dinero a: 3001234567 
+4. Monto a pagar: $${datosOrden.total.toLocaleString()} COP
+5. En la descripción coloca: ${datosOrden.orderId}
+
+Después de realizar el pago, regresa aquí y confirma tu pedido.
+    `;
+    
+    alert(mensaje);
+    
+    // Abrir Daviplata en una nueva pestaña
+    window.open('https://www.daviplata.com/', '_blank');
+    
+    // Mostrar botón de confirmación
+    mostrarConfirmacionPago(datosOrden);
+}
+
