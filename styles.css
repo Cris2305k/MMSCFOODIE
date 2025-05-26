@@ -1386,7 +1386,12 @@ header h2 {
         box-shadow: none !important;
         border: 1px solid #ddd;
     }
-.microsoft {
+}
+
+#microsoft-login {
     display: none !important;
-    }
+}
+
+.login-btn.microsoft {
+    display: none !important;
 }
