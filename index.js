@@ -1,4 +1,3 @@
-
 const firebaseConfig = {
   apiKey: "AIzaSyDk0RoiW5wyaNzsfKFlcyHH5vtpDYp7LeY",
   authDomain: "blessedfood-8aeba.firebaseapp.com",
@@ -11,8 +10,8 @@ const firebaseConfig = {
 firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 
-// Configuración de la API
-const API_BASE_URL = 'http://localhost:8000';
+// Configuración de la API - CAMBIA ESTA URL por tu URL de Render
+const API_BASE_URL = 'https://tu-app-render.onrender.com'; // ← CAMBIAR por tu URL real de Render
 let usuarioLogueado = false;
 let usuarioActual = null;
 let carrito = [];
@@ -100,7 +99,7 @@ async function obtenerProductos() {
         return productosData;
     } catch (error) {
         console.error('Error obteniendo productos:', error);
-        mostrarError('Error al cargar los productos. Por favor, recarga la página.');
+        mostrarError('Error al cargar los productos. Verifica tu conexión a internet.');
         return [];
     }
 }
@@ -170,7 +169,7 @@ function loginWithProvider(provider) {
                     document.getElementById("order-history-section").classList.remove("none");
                     
                 } catch (error) {
-                    mostrarError("Error al procesar tu información de usuario");
+                    mostrarError("Error al conectar con el servidor. Por favor intenta más tarde.");
                 }
             } else {
                 auth.signOut();
@@ -239,6 +238,7 @@ auth.onAuthStateChanged(async (user) => {
                 
             } catch (error) {
                 console.error("Error al cargar usuario:", error);
+                mostrarError("Error de conexión. Verifica tu internet.");
             }
         }
     } else {
@@ -261,7 +261,7 @@ async function cargarProductos() {
         const productosData = await obtenerProductos();
         renderizarProductos(productosData);
     } catch (error) {
-        mostrarError('Error al cargar los productos');
+        mostrarError('Error al cargar los productos. Verifica tu conexión.');
     } finally {
         mostrarCargando(false);
     }
@@ -279,7 +279,7 @@ function renderizarProductos(productosData) {
             <div class="product-content">
                 <h2 class="product-title">${producto.name}</h2>
                 <p class="product-description">${producto.description}</p>
-                <p class="product-price">$${producto.price.toLocaleString()} COP</p>
+                <p class="product-price">${producto.price.toLocaleString()} COP</p>
                 <div class="product-actions">
                     <input type="number" id="cantidad-${producto.id}" class="quantity-input" min="1" value="1">
                     <button class="add-to-cart-btn" onclick="agregarProductoAlCarrito(${producto.id})">
@@ -319,7 +319,7 @@ function renderizarRecomendaciones(recomendacionesData) {
             <div class="recommendation-content">
                 <h3>${producto.name}</h3>
                 <p class="recommendation-reason">${recomendacion.reason}</p>
-                <p class="recommendation-price">$${producto.price.toLocaleString()} COP</p>
+                <p class="recommendation-price">${producto.price.toLocaleString()} COP</p>
                 <button class="recommendation-btn" onclick="agregarProductoAlCarrito(${producto.id})">
                     <i class="fas fa-plus"></i> Agregar
                 </button>
@@ -405,7 +405,7 @@ function actualizarCarrito() {
     carrito.forEach((item, index) => {
         const div = document.createElement("div");
         div.innerHTML = `
-            <span>${item.nombre} - $${item.precio.toLocaleString()} COP</span>
+            <span>${item.nombre} - ${item.precio.toLocaleString()} COP</span>
             <button class="boton-eliminar" onclick="eliminarProductoDelCarrito(${index})">
                 <i class="fas fa-trash"></i> Eliminar
             </button>
@@ -419,7 +419,7 @@ function actualizarCarrito() {
     if (usuarioActual && usuarioActual.is_student) {
         descuento = Math.round(subtotal * 0.15);
         discountSection.classList.remove("none");
-        descuentoLabel.textContent = `-$${descuento.toLocaleString()} COP`;
+        descuentoLabel.textContent = `-${descuento.toLocaleString()} COP`;
     } else {
         discountSection.classList.add("none");
     }
@@ -434,8 +434,8 @@ function actualizarCarrito() {
 
     // Calcular y mostrar totales
     const total = subtotal - descuento + envio;
-    subtotalLabel.textContent = `$${subtotal.toLocaleString()} COP`;
-    totalLabel.innerHTML = `<span>Total:</span><span>$${total.toLocaleString()} COP</span>`;
+    subtotalLabel.textContent = `${subtotal.toLocaleString()} COP`;
+    totalLabel.innerHTML = `<span>Total:</span><span>${total.toLocaleString()} COP</span>`;
 }
 
 function eliminarProductoDelCarrito(index) {
@@ -537,7 +537,7 @@ async function RealizarCompra() {
         // Si es efectivo, continúa con el flujo normal
         // Crear resumen del pedido
         const resumenProductos = pedidoCreado.items.map(item => 
-            `- ${item.product_name} (x${item.quantity}): $${item.total.toLocaleString()} COP`
+            `- ${item.product_name} (x${item.quantity}): ${item.total.toLocaleString()} COP`
         ).join('\n');
         
         const metodoPagoTexto = metodoPago === 'nequi' ? '💜 Nequi' : 
@@ -550,9 +550,9 @@ async function RealizarCompra() {
 ${resumenProductos}
 
 💰 RESUMEN:
-Subtotal: $${(pedidoCreado.total_amount - 5000 + pedidoCreado.discount_amount).toLocaleString()} COP
-${pedidoCreado.discount_amount > 0 ? `Descuento estudiante: -$${pedidoCreado.discount_amount.toLocaleString()} COP\n` : ''}Envío: $5.000 COP
-TOTAL: $${pedidoCreado.total_amount.toLocaleString()} COP
+Subtotal: ${(pedidoCreado.total_amount - 5000 + pedidoCreado.discount_amount).toLocaleString()} COP
+${pedidoCreado.discount_amount > 0 ? `Descuento estudiante: -${pedidoCreado.discount_amount.toLocaleString()} COP\n` : ''}Envío: $5.000 COP
+TOTAL: ${pedidoCreado.total_amount.toLocaleString()} COP
 
 📍 DIRECCIÓN DE ENTREGA:
 ${pedidoCreado.delivery_address}
@@ -585,7 +585,7 @@ Tu pedido será preparado con amor y entregado pronto.
 
     } catch (error) {
         console.error('Error al crear pedido:', error);
-        mostrarError('Error al procesar tu pedido. Por favor, inténtalo de nuevo.');
+        mostrarError('Error al procesar tu pedido. Verifica tu conexión e inténtalo de nuevo.');
     } finally {
         document.getElementById("procesando").classList.add("none");
     }
@@ -643,9 +643,9 @@ function mostrarConfirmacionPago(datosOrden) {
 
 // Función para confirmar que el pago fue realizado
 function confirmarPagoRealizado() {
-    const pedidoEnProceso = JSON.parse(localStorage.getItem('pedidoEnProceso'));
+    const pedidoEnProceso = JSON.parse(localStorage.getItem('pedidoEnProceso') || '{}');
     
-    if (pedidoEnProceso) {
+    if (pedidoEnProceso.orderId) {
         // Mostrar resumen del pedido
         const resumenPedido = `
 🍽️ PEDIDO CONFIRMADO - BLESSEDFOOD 🍽️
@@ -705,355 +705,7 @@ function cancelarPago() {
     }
 }
 
-// Inicialización de la aplicación
-document.addEventListener('DOMContentLoaded', async function() {
-    // Cargar preferencia de modo oscuro
-    const darkModePreference = localStorage.getItem('dark-mode');
-    if (darkModePreference === 'true') {
-        document.body.classList.add('dark-mode');
-        document.getElementById('modoOscuroToggle').innerHTML = '<i class="fas fa-sun"></i>';
-    }
-    
-    // Cargar productos
-    await cargarProductos();
-});
-
-// Agregar estilos CSS dinámicos
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes highlight {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.02); }
-        100% { transform: scale(1); }
-    }
-    
-    .cart-count {
-        position: absolute;
-        top: -8px;
-        right: -8px;
-        background: var(--danger);
-        color: white;
-        border-radius: 50%;
-        width: 24px;
-        height: 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.8rem;
-        font-weight: bold;
-    }
-    
-    .recommendation-card {
-        background: var(--white);
-        border-radius: 15px;
-        padding: 1rem;
-        box-shadow: var(--shadow);
-        transition: var(--transition);
-        text-align: center;
-    }
-    
-    .recommendation-card:hover {
-        transform: translateY(-5px);
-        box-shadow: var(--shadow-hover);
-    }
-    
-    .recommendation-image {
-        width: 100%;
-        height: 120px;
-        object-fit: cover;
-        border-radius: 10px;
-        margin-bottom: 0.5rem;
-    }
-    
-    .recommendation-content h3 {
-        font-size: 1.1rem;
-        font-weight: 600;
-        color: var(--text-dark);
-        margin-bottom: 0.3rem;
-    }
-    
-    .recommendation-reason {
-        font-size: 0.9rem;
-        color: var(--text-light);
-        margin-bottom: 0.5rem;
-        font-style: italic;
-    }
-    
-    .recommendation-price {
-        font-size: 1rem;
-        font-weight: 700;
-        color: var(--primary-color);
-        margin-bottom: 0.8rem;
-    }
-    
-    .recommendation-btn {
-        background: linear-gradient(135deg, var(--accent-color) 0%, var(--secondary-color) 100%);
-        color: white;
-        border: none;
-        padding: 0.5rem 1rem;
-        border-radius: 25px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: var(--transition);
-        font-size: 0.9rem;
-    }
-    
-    .recommendation-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(255,140,66,0.3);
-    }
-    
-    .recommendations-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 1rem;
-        margin-bottom: 2rem;
-    }
-    
-    .recommendations-title {
-        color: var(--text-dark);
-        font-size: 1.5rem;
-        font-weight: 600;
-        margin-bottom: 1rem;
-        text-align: center;
-    }
-    
-    .student-discount {
-        background: linear-gradient(135deg, var(--success) 0%, #20c997 100%);
-        color: white;
-        padding: 0.8rem;
-        border-radius: 10px;
-        margin-top: 1rem;
-        font-weight: 600;
-        text-align: center;
-    }
-    
-    .history-toggle {
-        background: linear-gradient(135deg, #6c757d 0%, #5a638a 100%);
-        color: white;
-        border: none;
-        padding: 1rem 2rem;
-        border-radius: 50px;
-        cursor: pointer;
-        font-size: 1.1rem;
-        font-weight: 600;
-        transition: var(--transition);
-        box-shadow: 0 4px 15px rgba(108,117,125,0.3);
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        margin: 2rem auto;
-    }
-    
-    .history-toggle:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 8px 25px rgba(108,117,125,0.4);
-    }
-    
-    .order-item {
-        background: var(--white);
-        border-radius: 15px;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
-        box-shadow: var(--shadow);
-        border-left: 4px solid var(--primary-color);
-    }
-    
-    .order-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 1rem;
-        padding-bottom: 0.5rem;
-        border-bottom: 2px solid var(--light-gray);
-    }
-    
-    .order-header h4 {
-        color: var(--text-dark);
-        font-size: 1.2rem;
-        font-weight: 700;
-        margin: 0;
-    }
-    
-    .order-date {
-        color: var(--text-light);
-        font-size: 0.9rem;
-        font-weight: 500;
-    }
-    
-    .order-details p {
-        margin: 0.5rem 0;
-        color: var(--text-dark);
-        line-height: 1.4;
-    }
-    
-    .order-total {
-        font-size: 1.1rem;
-        color: var(--primary-color) !important;
-        margin-top: 1rem !important;
-    }
-    
-    .order-status {
-        display: inline-block;
-        padding: 0.3rem 0.8rem;
-        border-radius: 20px;
-        font-size: 0.8rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        margin-top: 0.5rem;
-    }
-    
-    .status-confirmed {
-        background: var(--success);
-        color: white;
-    }
-    
-    .status-pending {
-        background: var(--secondary-color);
-        color: white;
-    }
-    
-    .status-delivered {
-        background: #28a745;
-        color: white;
-    }
-    
-    .no-orders {
-        text-align: center;
-        color: var(--text-light);
-        font-style: italic;
-        padding: 2rem;
-    }
-    
-    .modal {
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0,0,0,0.8);
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        z-index: 2000;
-    }
-    
-    .modal-content {
-        background: var(--white);
-        padding: 2rem;
-        border-radius: 20px;
-        max-width: 500px;
-        width: 90%;
-        text-align: center;
-        box-shadow: var(--shadow-hover);
-    }
-    
-    .modal-content h3 {
-        color: var(--danger);
-        margin-bottom: 1rem;
-        font-size: 1.5rem;
-    }
-    
-    .modal-content.success h3 {
-        color: var(--success);
-    }
-    
-    .modal-content p {
-        color: var(--text-dark);
-        margin-bottom: 1.5rem;
-        line-height: 1.5;
-    }
-    
-    .modal-btn {
-        background: var(--danger);
-        color: white;
-        border: none;
-        padding: 0.8rem 2rem;
-        border-radius: 25px;
-        cursor: pointer;
-        font-weight: 600;
-        transition: var(--transition);
-    }
-    
-    .modal-btn.success-btn {
-        background: var(--success);
-    }
-    
-    .modal-btn:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    }
-    
-    .loading-content {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 1rem;
-        color: white;
-        font-size: 1.2rem;
-        font-weight: 600;
-    }
-    
-    .loading-spinner i {
-        font-size: 3rem;
-        animation: spin 1s linear infinite;
-    }
-    
-    .subtotal-cost, .discount-cost {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 0.5rem;
-        font-weight: 500;
-        color: var(--text-dark);
-    }
-    
-    .discount-cost {
-        color: var(--success);
-    }
-    
-    /* Dark mode para nuevos elementos */
-    .dark-mode .recommendation-card,
-    .dark-mode .order-item,
-    .dark-mode .modal-content {
-        background: var(--darker-bg);
-        color: var(--white);
-    }
-    
-    .dark-mode .recommendation-content h3,
-    .dark-mode .order-header h4,
-    .dark-mode .order-details p,
-    .dark-mode .modal-content p,
-    .dark-mode .recommendations-title {
-        color: var(--white);
-    }
-    
-    .dark-mode .recommendation-reason,
-    .dark-mode .order-date {
-        color: #ccc;
-    }
-    
-    /* Responsive para recomendaciones */
-    @media (max-width: 768px) {
-        .recommendations-grid {
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 0.8rem;
-        }
-        
-        .recommendation-card {
-            padding: 0.8rem;
-        }
-        
-        .recommendation-image {
-            height: 100px;
-        }
-        
-        .order-header {
-            flex-direction: column;
-            align-items: flex-start;
-            gap: 0.5rem;
-        }
-    }
-`
+// Funciones para historial
 async function toggleHistorial() {
     const content = document.getElementById("order-history-content");
     const isVisible = !content.classList.contains("none");
@@ -1112,8 +764,8 @@ function renderizarHistorial(historial) {
                 <p><strong>Productos:</strong> ${productos}</p>
                 <p><strong>Dirección:</strong> ${pedido.delivery_address}</p>
                 <p><strong>Método de pago:</strong> ${pedido.payment_method}</p>
-                ${pedido.discount_amount > 0 ? `<p><strong>Descuento aplicado:</strong> $${pedido.discount_amount.toLocaleString()} COP</p>` : ''}
-                <p class="order-total"><strong>Total: $${pedido.total_amount.toLocaleString()} COP</strong></p>
+                ${pedido.discount_amount > 0 ? `<p><strong>Descuento aplicado:</strong> ${pedido.discount_amount.toLocaleString()} COP</p>` : ''}
+                <p class="order-total"><strong>Total: ${pedido.total_amount.toLocaleString()} COP</strong></p>
                 <span class="order-status status-${pedido.status}">${pedido.status}</span>
             </div>
         `;
@@ -1220,7 +872,7 @@ function redireccionarANequi(datosOrden) {
 1. Serás redirigido a la página de Nequi
 2. Inicia sesión en tu cuenta
 3. Envía el dinero a: 3001234567 
-4. Monto a pagar: $${datosOrden.total.toLocaleString()} COP
+4. Monto a pagar: ${datosOrden.total.toLocaleString()} COP
 5. En la descripción coloca: ${datosOrden.orderId}
 
 Después de realizar el pago, regresa aquí y confirma tu pedido.
@@ -1247,7 +899,7 @@ function redireccionarADaviplata(datosOrden) {
 1. Serás redirigido a la página de Daviplata
 2. Inicia sesión en tu cuenta
 3. Envía el dinero a: 3001234567 
-4. Monto a pagar: $${datosOrden.total.toLocaleString()} COP
+4. Monto a pagar: ${datosOrden.total.toLocaleString()} COP
 5. En la descripción coloca: ${datosOrden.orderId}
 
 Después de realizar el pago, regresa aquí y confirma tu pedido.
@@ -1262,3 +914,26 @@ Después de realizar el pago, regresa aquí y confirma tu pedido.
     mostrarConfirmacionPago(datosOrden);
 }
 
+// Inicialización de la aplicación
+document.addEventListener('DOMContentLoaded', async function() {
+    // Cargar preferencia de modo oscuro
+    const darkModePreference = localStorage.getItem('dark-mode');
+    if (darkModePreference === 'true') {
+        document.body.classList.add('dark-mode');
+        document.getElementById('modoOscuroToggle').innerHTML = '<i class="fas fa-sun"></i>';
+    }
+    
+    // Cargar productos
+    await cargarProductos();
+    
+    // Verificar si hay un pedido en proceso para mostrar confirmación
+    const pedidoEnProceso = localStorage.getItem('pedidoEnProceso');
+    if (pedidoEnProceso) {
+        try {
+            const datosOrden = JSON.parse(pedidoEnProceso);
+            mostrarConfirmacionPago(datosOrden);
+        } catch (error) {
+            localStorage.removeItem('pedidoEnProceso');
+        }
+    }
+});

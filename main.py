@@ -14,23 +14,27 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# Configuración de la base de datos
-SQLALCHEMY_DATABASE_URL = "sqlite:///./blessedfood.db"
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False})
+# Configuración de la base de datos para Render
+DATABASE_URL = os.getenv("DATABASE_URL")
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+SQLALCHEMY_DATABASE_URL = DATABASE_URL or "sqlite:///./blessedfood.db"
+engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False} if "sqlite" in SQLALCHEMY_DATABASE_URL else {})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 # Configuración de seguridad
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-SECRET_KEY = os.getenv("SECRET_KEY", "tu_clave_secreta_aqui")
+SECRET_KEY = os.getenv("SECRET_KEY", "blessedfood_secret_key_2024_secure")
 ALGORITHM = "HS256"
 
 app = FastAPI(title="BlessedFood API", version="1.0.0")
 
-# Configuración CORS
+# Configuración CORS - Permitir frontend desde GitHub Pages
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # En producción, especifica dominios exactos
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -294,12 +298,16 @@ def init_sample_data(db: Session):
 @app.on_event("startup")
 async def startup_event():
     db = SessionLocal()
-    init_sample_data(db)
-    db.close()
+    try:
+        init_sample_data(db)
+    except Exception as e:
+        print(f"Error initializing data: {e}")
+    finally:
+        db.close()
 
 @app.get("/")
 async def root():
-    return {"message": "BlessedFood API - ¡Bienvenido!"}
+    return {"message": "BlessedFood API - ¡Bienvenido!", "status": "running"}
 
 # Usuarios
 @app.post("/users/", response_model=UserResponse)
@@ -547,6 +555,8 @@ async def get_user_recommendations(user_email: str, db: Session = Depends(get_db
         for rec in recommendations
     ]
 
+# Configuración para Render
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
