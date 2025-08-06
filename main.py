@@ -20,7 +20,21 @@ if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
 
 SQLALCHEMY_DATABASE_URL = DATABASE_URL or "sqlite:///./blessedfood.db"
-engine = create_engine(SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False} if "sqlite" in SQLALCHEMY_DATABASE_URL else {})
+
+# Configuración del engine con soporte para Render y SQLite
+if "postgresql" in SQLALCHEMY_DATABASE_URL:
+    engine = create_engine(
+        SQLALCHEMY_DATABASE_URL,
+        connect_args={"sslmode": "require"},
+        pool_pre_ping=True,   
+        pool_recycle=300      
+    )
+else:
+    engine = create_engine(
+        SQLALCHEMY_DATABASE_URL,
+        connect_args={"check_same_thread": False}
+    )
+
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
@@ -29,16 +43,21 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = os.getenv("SECRET_KEY", "blessedfood_secret_key_2024_secure")
 ALGORITHM = "HS256"
 
+# Inicialización de la aplicación FastAPI
 app = FastAPI(title="BlessedFood API", version="1.0.0")
 
-# Configuración CORS - Permitir frontend desde GitHub Pages
+# Configuración CORS - Permitir solo dominios específicos en producción
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # En producción, especifica dominios exactos
+    allow_origins=[
+        "https://mmscfoodie.github.io",    
+        "https://blessedfood.onrender.com" 
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
 
 # Modelos de Base de Datos
 class User(Base):
@@ -559,4 +578,5 @@ async def get_user_recommendations(user_email: str, db: Session = Depends(get_db
 if __name__ == "__main__":
     import uvicorn
     port = int(os.environ.get("PORT", 8000))
+
     uvicorn.run(app, host="0.0.0.0", port=port)
